@@ -10,6 +10,7 @@ namespace console_jogger
         private CommandInterpreter CmdI;
         public ConsoleJogger(){
             this.CmdI = new CommandInterpreter(new Settings(new MyScreen()));
+ 
         }
 
         static void Main(string[] args)
@@ -18,7 +19,11 @@ namespace console_jogger
             //Thread.Sleep(3000);
             new ConsoleJogger().Run();
 
+
+
         }
+
+
 
         public void Run(){
             ConsoleKeyInfo myKey;
@@ -29,6 +34,8 @@ namespace console_jogger
                 CmdI.processKey(myKey.Key);
             } while (myKey.Key != ConsoleKey.Escape);
 
+            //get rid of all unmanaged resources and extra thread for serial
+            CmdI.Dispose();
         }
 
     }

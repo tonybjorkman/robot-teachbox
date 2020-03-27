@@ -12,40 +12,45 @@ namespace console_jogger
     public class CmdMsg
     {
 
-        public CmdMsg(Command cmd, Vector3 v){
+        public CmdMsg(Command cmd, Vector3 v, int length){
             Type = cmd;
             Vector = v;
+            Length = length;
         }
 
         public Command Type;
         public Vector3 Vector;
+
+        public int Length;
     }
 
-    public class CommandInterpreter
+    public class CommandInterpreter : IDisposable
     {
         private Settings ProgSettings;
+        
+
 
         private delegate CmdMsg KeyMapperDelegate(ConsoleKey k);
         private KeyMapperDelegate KeyMapper;
-
+        private RobotSender _robotSender;
 
         public CommandInterpreter(Settings s){
             this.ProgSettings = s;
+            this._robotSender = new RobotSender();
             KeyMapper = GetXYZCmdMsgFromKey;
         }
+
         public void processKey(ConsoleKey myKey){
             CmdMsg msg = null;
             msg = KeyMapper(myKey);
             if(msg == null){
                 ChangeSettingsWithKey(myKey);
             } else {
-                ProcessCommand(msg);
+                _robotSender.ProcessCommand(msg);
             }
         }
 
-        private void ProcessCommand(CmdMsg msg){
-            System.Console.WriteLine($"Processing message: {msg.Type} Vector: {msg.Vector}");
-        }
+
 
         private CmdMsg GetMovement(Delegate keymap, ConsoleKey key)
         {
@@ -53,21 +58,23 @@ namespace console_jogger
         }
 
         private CmdMsg GetXYZCmdMsgFromKey(ConsoleKey myKey){
+                var stp = ProgSettings.GetCurrentStep();
                 return myKey switch
                 {
-                    ConsoleKey.D4 => new CmdMsg(Command.MoveXYZ, new Vector3(0,1,0)),
-                    ConsoleKey.D2 => new CmdMsg(Command.MoveXYZ, new Vector3(0,-1,0)),
-                    ConsoleKey.D3 => new CmdMsg(Command.MoveXYZ, new Vector3(1,0,0)),
+                    ConsoleKey.D4 => new CmdMsg(Command.MoveXYZ, new Vector3(0,1,0),stp),
+                    ConsoleKey.D2 => new CmdMsg(Command.MoveXYZ, new Vector3(0,-1,0),stp),
+                    ConsoleKey.D3 => new CmdMsg(Command.MoveXYZ, new Vector3(1,0,0),stp),
                     _ => null
                 };
         }
 
         private CmdMsg GetAngleCommandFromKey(ConsoleKey myKey){
+                var stp = ProgSettings.GetCurrentStep();
                 return myKey switch
                 {
-                    ConsoleKey.D1 => new CmdMsg(Command.MoveAngle, new Vector3(1,1,0)),
-                    ConsoleKey.D2 => new CmdMsg(Command.MoveAngle, new Vector3(1,-1,0)),
-                    ConsoleKey.D3 => new CmdMsg(Command.MoveAngle, new Vector3(2,1,0)),
+                    ConsoleKey.D1 => new CmdMsg(Command.MoveAngle, new Vector3(1,1,0),stp),
+                    ConsoleKey.D2 => new CmdMsg(Command.MoveAngle, new Vector3(1,-1,0),stp),
+                    ConsoleKey.D3 => new CmdMsg(Command.MoveAngle, new Vector3(2,1,0),stp),
                     _ => null
                 };
         }
@@ -83,14 +90,18 @@ namespace console_jogger
                 break;
                 case ConsoleKey.X:
                 KeyMapper = GetXYZCmdMsgFromKey;
-                ProgSettings.MoveType=Command.MoveXYZ;
+                ProgSettings.SetMovType(Command.MoveXYZ);
                 break;
                 case ConsoleKey.A:
                 KeyMapper = GetAngleCommandFromKey;
-                ProgSettings.MoveType=Command.MoveAngle;
+                ProgSettings.SetMovType(Command.MoveAngle);
                 break;
             }
         }
 
+        public void Dispose()
+        {
+            this._robotSender.Dispose();
+        }
     }
 }

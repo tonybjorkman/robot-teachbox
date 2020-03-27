@@ -6,4 +6,8 @@
     <RootNamespace>console_jogger</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="4.7.0" />
+  </ItemGroup>
+
 </Project>
