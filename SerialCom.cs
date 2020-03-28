@@ -18,7 +18,7 @@ namespace console_jogger
             _serialPort.DataBits = 8;
             _serialPort.Parity = Parity.Even;
             _serialPort.StopBits = StopBits.Two;
-            _serialPort.PortName="COM6";
+            _serialPort.PortName="COM1";
             _serialPort.ReadTimeout = 1000;
             _serialPort.RtsEnable = true;
             _serialPort.Open();
@@ -54,7 +54,8 @@ namespace console_jogger
 
 
         public void WriteLine(string msg){
-            _serialPort.WriteLine(msg);
+            if(_serialPort.CtsHolding) //Prevents the serial output from creating a buffer of commands which makes the robot unsreponsive
+            _serialPort.WriteLine(msg+"\r\n");
         }
         public void Read()
         {
