@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 
 namespace console_jogger
 {
@@ -41,8 +42,47 @@ namespace console_jogger
             return "";
         }
 
+        public void GrabPolar(PolarPosition pos, double depth){
+            MovePosition(pos.ToMelfaPosString());
+            Thread.Sleep(1300);
+            ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(1)));
+            Thread.Sleep(1300);
+            var grabPos = (PolarPosition) pos.Clone();
+            grabPos.Distance += depth;
+            MovePosition(grabPos.ToMelfaPosString());
+            //Thread.Sleep(3000);
+            Thread.Sleep(1300);
+            ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(0)));
+            Thread.Sleep(1300);
+            MovePosition(pos.ToMelfaPosString());
+        }
+
+        /// <summary>
+        /// Degrees is anti-clockwise, 0* is straight ahead
+        /// </summary>
+        /// <returns></returns>
+        public string QueryPolarString(){
+            string output = "";
+                var pos = new PolarPosition();
+                pos.InputValues();
+                output = $"MP "+pos.ToMelfaPosString();
+                System.Console.WriteLine(output);
+            return output;
+        }
+
+        public string QueryPolarGrab(){
+                var pos = new PolarPosition();
+                pos.InputValues();
+                GrabPolar(pos,120);
+                return "";
+        }
+
+        public void MovePosition(string melfaString){
+                Serial.WriteLine("MP "+melfaString);
+        }
+
         public void ProcessCommand(CmdMsg? msg){
-            
+
              var melfaString = msg?.Type switch {
                 Command.MoveXYZ => String.Format("DS {0},{1},{2}",
                                         msg?.Vector.X,
@@ -55,6 +95,7 @@ namespace console_jogger
                                         ),
                 Command.Where => "WH",
                 Command.Gripper => GripperAction((Vector3)msg?.Vector),
+                Command.QueryPolar => QueryPolarGrab(),
                 _  => null
             };
 

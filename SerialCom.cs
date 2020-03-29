@@ -49,12 +49,13 @@ namespace console_jogger
             ReadThread = new Thread(this.Read);
             ReadThread.Start();
             System.Console.WriteLine("ReadThread started");
-
         }
 
 
         public void WriteLine(string msg){
-            if(_serialPort.CtsHolding) //Prevents the serial output from creating a buffer of commands which makes the robot unsreponsive
+            while(!_serialPort.CtsHolding){  //wait with sending until its ready.
+
+            } //Prevents the serial output from creating a buffer of commands which makes the robot unsreponsive
             _serialPort.WriteLine(msg+"\r\n");
         }
         public void Read()

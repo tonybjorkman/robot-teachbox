@@ -9,6 +9,7 @@ namespace console_jogger
         MoveAngle,
         Where,
         Gripper,
+        QueryPolar,
         None
     }
 
@@ -60,8 +61,7 @@ namespace console_jogger
                     ConsoleKey.W => new CmdMsg(Command.Where, new Vector3()),
                     ConsoleKey.O => new CmdMsg(Command.Gripper, new Vector3(1)),
                     ConsoleKey.C => new CmdMsg(Command.Gripper, new Vector3(0)),
-
-
+                    ConsoleKey.Q => new CmdMsg(Command.QueryPolar, new Vector3(0)),
                     _ => null
                 };
         }

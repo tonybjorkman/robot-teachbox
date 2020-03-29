@@ -2,6 +2,8 @@
 using System.IO.Ports;
 using System.Threading;
 using System.Windows.Input;
+using System.Threading;
+using System.Globalization;
 
 namespace console_jogger
 {
@@ -17,6 +19,10 @@ namespace console_jogger
         static void Main(string[] args)
         {
             Console.WriteLine("App started");
+            const string culture = "en-US";
+            CultureInfo ci = CultureInfo.GetCultureInfo(culture);
+
+            Thread.CurrentThread.CurrentCulture = ci;
             //Thread.Sleep(3000);
             new ConsoleJogger().Run();
 
