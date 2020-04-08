@@ -13,36 +13,41 @@ Select COM-port to use in SerialCom.cs. Standard is COM1
 The program has different keymappings depending on which movement mode is selected, either XYZ or Join Jog.
 Designed to be used with the numpad-keys.
 
-X - 	Selects XYZ movement mode
-A - 	Selects Joint movement mode
-W - 	Outputs current pose of robot
-O - 	Opens gripper
-C - 	Closes gripper
-Q - 	Queries for a composite movement of grapping object at polar coordinate.
-P - 	Query for a composite movement of "pouring liquid" by moving the tooltip around the circumference of a 3D circle while rolling the tool.
-Esc - 	Quits application
+| Key        | Command           | 
+| ------------- |:-------------| 
+| X      | Selects XYZ movement mode | 
+| A      | Selects Joint movement mode      |   
+| W | Outputs current pose of robot      |   
+| O | 	Opens gripper |
+|C | 	Closes gripper |
+|Q | 	Queries for a composite movement of grapping object at polar coordinate.|
+|P | 	Query for a composite movement of "pouring liquid" by moving the tooltip around the circumference of a 3D circle while rolling the tool.|
+|Esc | 	Quits application|
 
 ### Movement Mode XYZ:
-5 - 	+Z
-0 - 	-Z
-2 - 	+X
-8 - 	-X
-6 - 	+Y
-4 - 	-Y
-Down - 	+ToolStraight
-Up -   	-ToolStraight
+| Key        | Command           | 
+| ------------- |:-------------| 
+|5 | 	+Z|
+|0 | 	-Z|
+|2 | 	+X|
+|8 | 	-X|
+|6 | 	+Y|
+|4 | 	-Y|
+|Down | 	+ToolStraight|
+|Up |   	-ToolStraight|
 
 
 ### Movement Mode Joints:
-0 - 	+Elbow
-2 - 	-Elbow
-5 - 	+Shoulder
-8 - 	-Shoulder
-6 - 	+Waist
-4 - 	-Waist
-Down - 	+Pitch
-Up -   	-Pitch
-Left - 	+Roll
-Right -	-Roll
-
+| Key        | Command           | 
+| ------------- |:-------------| 
+|0 | 	+Elbow|
+|2 | 	-Elbow|
+|5 | 	+Shoulder|
+|8 | 	-Shoulder|
+|6 | 	+Waist|
+|4 | 	-Waist|
+|Down | 	+Pitch|
+|Up |   	-Pitch|
+|Left | 	+Roll|
+|Right |	-Roll|
 
