@@ -10,6 +10,8 @@ namespace console_jogger
         Where,
         Gripper,
         QueryPolar,
+        QueryPour,
+        ToolStraight, //moves the tool tip in the same direction as its pointing to
         None
     }
 
@@ -51,7 +53,7 @@ namespace console_jogger
             if(msg == null){ //The key has not triggered any robot commands but may still be valid key for settings
                 ChangeSettingsWithKey(myKey);
             } else {
-                _robotSender.ProcessCommand(msg);
+                _robotSender.ProcessCommand((CmdMsg)msg);
             }
         }
 
@@ -62,6 +64,7 @@ namespace console_jogger
                     ConsoleKey.O => new CmdMsg(Command.Gripper, new Vector3(1)),
                     ConsoleKey.C => new CmdMsg(Command.Gripper, new Vector3(0)),
                     ConsoleKey.Q => new CmdMsg(Command.QueryPolar, new Vector3(0)),
+                    ConsoleKey.P => new CmdMsg(Command.QueryPour, new Vector3(0)),
                     _ => null
                 };
         }
@@ -75,6 +78,8 @@ namespace console_jogger
                     ConsoleKey.D4 => new CmdMsg(Command.MoveXYZ, new Vector3(0,-1,0)*stp),
                     ConsoleKey.D5 => new CmdMsg(Command.MoveXYZ, new Vector3(0,0,1)*stp),
                     ConsoleKey.D0 => new CmdMsg(Command.MoveXYZ, new Vector3(0,0,-1)*stp),
+                    ConsoleKey.DownArrow => new CmdMsg(Command.ToolStraight, new Vector3(1*stp,0,0)),
+                    ConsoleKey.UpArrow => new CmdMsg(Command.ToolStraight, new Vector3(-1*stp,0,0)),
                     _ => null
                 };
         }

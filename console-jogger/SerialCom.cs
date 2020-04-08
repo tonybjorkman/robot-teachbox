@@ -39,12 +39,18 @@ namespace console_jogger
             return allPorts;
         }
 
+        /// <summary>
+        /// Stop Thread used for continously reading and outputting serial in data
+        /// </summary>
         public void StopReadThread(){
             _continue = false;
             ReadThread.Join();
             System.Console.WriteLine("ReadThread closed");
         }
 
+        /// <summary>
+        /// Start Thread used for continously reading and outputting serial in data
+        /// </summary>
         public void StartReadThread(){
             ReadThread = new Thread(this.Read);
             ReadThread.Start();
@@ -52,13 +58,18 @@ namespace console_jogger
         }
 
 
+        /// <summary>
+        ///  Sends string to robot via serial
+        /// </summary>
+        /// <param name="msg">string to send</param>
         public void WriteLine(string msg){
             while(!_serialPort.CtsHolding){  //wait with sending until its ready.
-
+                Thread.Sleep(50);
             } //Prevents the serial output from creating a buffer of commands which makes the robot unsreponsive
+            Thread.Sleep(100);
             _serialPort.WriteLine(msg+"\r\n");
         }
-        public void Read()
+        private void Read()
         {
             while (_continue)
             {
@@ -70,7 +81,7 @@ namespace console_jogger
                 catch (TimeoutException) { 
                     //It will timeout alot but thats not a problem,
                     //we still dont want it to wait forever and 
-                    //never be able to return
+                    //never be able to return. It's timeout prevents this loop from running too fast.
                 }
             }
         }

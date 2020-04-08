@@ -2,7 +2,6 @@
 using System.IO.Ports;
 using System.Threading;
 using System.Windows.Input;
-using System.Threading;
 using System.Globalization;
 
 namespace console_jogger
