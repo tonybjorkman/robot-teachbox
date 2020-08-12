@@ -41,10 +41,10 @@ namespace console_jogger
     }
     public class Settings
     {
-        MyScreen View; //skipping observer pattern in this simple app. direct access.
+        public MyScreen view; //skipping observer pattern in this simple app. direct access.
         
         public Settings(MyScreen view){
-            View = view;
+            this.view = view;
             XyzMove = new MovementType(Command.MoveXYZ,1,50,20);
             AngleMove = new MovementType(Command.MoveAngle,1,50,20);
             CurrentMoveType = XyzMove;
@@ -52,6 +52,7 @@ namespace console_jogger
         private MovementType XyzMove;
         private MovementType AngleMove;
         private MovementType CurrentMoveType;
+
 
         public void Inc(){
             CurrentMoveType.IncStep();
@@ -71,6 +72,8 @@ namespace console_jogger
                 _ => null
             };
             CurrentMoveType = newType;
+            System.Console.WriteLine($"Movetype: {CurrentMoveType.ToString()}");
+
         }
 
         public int GetCurrentStep()

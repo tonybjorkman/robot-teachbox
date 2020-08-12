@@ -107,19 +107,28 @@ namespace console_jogger
             switch (myKey)
             {
                 case ConsoleKey.OemPlus:
-                ProgSettings.Inc();
-                break;
+                    ProgSettings.Inc();
+                    break;
                 case ConsoleKey.OemMinus:
-                ProgSettings.Dec();
-                break;
+                    ProgSettings.Dec();
+                    break;
                 case ConsoleKey.X:
-                KeyMapper = GetXYZCmdMsgFromKey;
-                ProgSettings.SetMovType(Command.MoveXYZ);
-                break;
+                    KeyMapper = GetXYZCmdMsgFromKey;
+                    ProgSettings.SetMovType(Command.MoveXYZ);
+                    break;
                 case ConsoleKey.A:
-                KeyMapper = GetAngleCommandFromKey;
-                ProgSettings.SetMovType(Command.MoveAngle);
-                break;
+                    KeyMapper = GetAngleCommandFromKey;
+                    ProgSettings.SetMovType(Command.MoveAngle);
+                    break;
+                case ConsoleKey.H:
+                    ProgSettings.view.PrintHelp();
+                    break;
+                default:
+                    if (!(myKey == ConsoleKey.Escape))
+                    {
+                        Console.WriteLine(myKey.ToString() + " is not a valid key. Press 'h' for help.");
+                    }
+                    break;
             }
         }
 

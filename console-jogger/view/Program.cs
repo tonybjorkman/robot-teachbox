@@ -42,8 +42,8 @@ namespace console_jogger
 
             do {
                 //ClearKeyBuffer(); //We dont want to have a buffer with keystrokes, then the robot will keep making moves even when no key is pressed!
-                myKey = Console.ReadKey();                
-                System.Console.WriteLine(myKey.Key.ToString());
+                myKey = Console.ReadKey(true);                
+                //System.Console.WriteLine(myKey.Key.ToString());
                 CmdI.processKey(myKey.Key);
             } while (myKey.Key != ConsoleKey.Escape);
 

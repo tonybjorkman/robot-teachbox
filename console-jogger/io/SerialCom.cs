@@ -18,7 +18,7 @@ namespace console_jogger
             _serialPort.DataBits = 8;
             _serialPort.Parity = Parity.Even;
             _serialPort.StopBits = StopBits.Two;
-            _serialPort.PortName="COM1";
+            _serialPort.PortName="COM6";
             _serialPort.ReadTimeout = 1000;
             _serialPort.RtsEnable = true;
             _serialPort.Open();
@@ -78,10 +78,11 @@ namespace console_jogger
                     string message = _serialPort.ReadLine();
                     Console.WriteLine(message);
                 }
-                catch (TimeoutException) { 
+                catch (TimeoutException e) {
                     //It will timeout alot but thats not a problem,
                     //we still dont want it to wait forever and 
                     //never be able to return. It's timeout prevents this loop from running too fast.
+                    ;
                 }
             }
         }
