@@ -1,5 +1,5 @@
 using System;
-namespace console_jogger
+namespace robot_teachbox
 {
     public class Circle3D: PolarPosition
     {

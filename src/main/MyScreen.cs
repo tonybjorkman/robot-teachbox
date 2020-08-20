@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace console_jogger
+namespace robot_teachbox
 {
     public class MyScreen
     {
@@ -23,10 +23,10 @@ namespace console_jogger
 
         internal void PrintHelp()
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "README.md");
+            string path = "";
             if (!File.Exists(path))
             {
-                path = Path.Combine(path, @"..\..\..\..\..\README.md"); //if running under development, go to project root.
+                path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\README.md"); //if running under development, go to project root.
             }
             try
             {

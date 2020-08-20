@@ -1,13 +1,26 @@
 using System;
+using System.ComponentModel;
 
-namespace console_jogger
+namespace robot_teachbox
 {
-    public class MovementType
+    public class MovementType : INotifyPropertyChanged
     {
         Command Type;
         int MinStep;
         int MaxStep;
-        int CurrentStep;
+        int _currentStep;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public int CurrentStep { get { return _currentStep; } set { _currentStep = value;RaisePropertyChanged("CurrentStep"); } }
         public MovementType(Command type,int min_step,int max_step,int start_step)
         {
             Type=type;
@@ -15,6 +28,9 @@ namespace console_jogger
             MaxStep=max_step;
             CurrentStep=start_step;
         }
+
+        private string _name;
+        public string Name { get { return this.Type.ToString(); } set {} }
 
         public int GetStep(){
             return CurrentStep;
@@ -39,20 +55,35 @@ namespace console_jogger
             return Type.ToString()+" Step:"+CurrentStep.ToString();
         }
     }
-    public class Settings
+    public class Settings : INotifyPropertyChanged
     {
         public MyScreen view; //skipping observer pattern in this simple app. direct access.
-        
-        public Settings(MyScreen view){
+
+        public int StepLength { get { return CurrentMoveType.GetStep(); } set { } }
+
+        public Settings(MyScreen view) {
             this.view = view;
-            XyzMove = new MovementType(Command.MoveXYZ,1,50,20);
-            AngleMove = new MovementType(Command.MoveAngle,1,50,20);
+            XyzMove = new MovementType(Command.MoveXYZ, 1, 50, 20);
+            AngleMove = new MovementType(Command.MoveAngle, 1, 50, 20);
             CurrentMoveType = XyzMove;
         }
         private MovementType XyzMove;
         private MovementType AngleMove;
-        private MovementType CurrentMoveType;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private MovementType _currentMoveType;
+        public MovementType CurrentMoveType { get { return _currentMoveType; } set { _currentMoveType = value; RaisePropertyChanged("CurrentMoveType"); } }
+
+        public string port { get; private set; }
 
         public void Inc(){
             CurrentMoveType.IncStep();
@@ -74,6 +105,11 @@ namespace console_jogger
             CurrentMoveType = newType;
             System.Console.WriteLine($"Movetype: {CurrentMoveType.ToString()}");
 
+        }
+
+        internal void SetPort(string port)
+        {
+            this.port = port;
         }
 
         public int GetCurrentStep()

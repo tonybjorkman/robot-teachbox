@@ -3,20 +3,20 @@ using System.Numerics;
 using System.Text;
 using System.Threading;
 
-namespace console_jogger
+namespace robot_teachbox
 {
     public class RobotSender: IDisposable
     {
         private SerialCom Serial;
 
-        public RobotSender(){
-            this.Serial = new SerialCom();
+        public RobotSender(string port){
+            this.Serial = new SerialCom(port);
             this.Serial.StartReadThread();
-            var ports = this.Serial.GetAllPorts();
+            /*var ports = this.Serial.GetAllPorts();
 
             foreach (var port in ports){
                 System.Console.WriteLine($"port:{port}");
-            }
+            }*/
         }
 
         public void Dispose()

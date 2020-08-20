@@ -1,6 +1,6 @@
 using System;
 
-namespace console_jogger
+namespace robot_teachbox
 {
     public class PolarPosition
     {

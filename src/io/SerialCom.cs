@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO.Ports;  
 using System.Threading; 
 
-namespace console_jogger
+namespace robot_teachbox
 {
     public class SerialCom : IDisposable
     {
@@ -12,18 +12,20 @@ namespace console_jogger
 
         private Thread ReadThread;
 
-        public SerialCom(){
+        public SerialCom(string port){
             _serialPort = new SerialPort();
             _serialPort.BaudRate = 9600;
             _serialPort.DataBits = 8;
             _serialPort.Parity = Parity.Even;
             _serialPort.StopBits = StopBits.Two;
-            _serialPort.PortName="COM6";
+            _serialPort.PortName=port;
             _serialPort.ReadTimeout = 1000;
             _serialPort.RtsEnable = true;
             _serialPort.Open();
             System.Console.WriteLine("Com port opened");
         }
+
+        public SerialCom(): this("COM6") {}
 
         ~SerialCom(){
             _serialPort.Close();
