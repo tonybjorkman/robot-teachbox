@@ -1,12 +1,14 @@
 # robot-teachbox
 Virtual teaching box for Melfa Movemaster industrial robotic arm.
 
-This is a console application which will send serial output according to the legacy Melfa Basic V commands for basic robot movements. 
+![GUI](https://raw.githubusercontent.com/tonybjorkman/robot-teachbox/master/doc/screenshot_2020_08_20.png)
+
+This is a WPF application which will send serial output according to the legacy Melfa Basic V commands for basic robot movements. 
 This enables easy jogging of a robot without the physical teaching box connected and instead using a computer keyboard.
 
 ## Setup:
 
-Select COM-port to use in SerialCom.cs. Standard is COM1
+Select COM-port in drop-down list and press Connect prior to issuing any commands.
 
 ## Operation:
 
