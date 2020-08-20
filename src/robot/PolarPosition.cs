@@ -30,8 +30,8 @@ namespace robot_teachbox
             }
         }
         //roll-joint relative the robots own position. Normally it relates to global position which is bad for pouring use case.
-        double RelRoll;
-        double Pitch;
+        public double RelRoll { get; set; }
+        public double Pitch { get; set; }
 
         public double x;
         public double y;

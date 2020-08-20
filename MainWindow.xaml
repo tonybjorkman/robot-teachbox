@@ -45,7 +45,30 @@
             <Button x:Name="btn_keyNumPad5" Grid.Row="1" Click="standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="47">+Z[5]</Button>
             <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
         </Grid>
+        <StackPanel  Width="400" Height="100" Margin="369,266,31,18">
+        <Label Content="Polarpositions" />
+            <DataGrid x:Name="dataGrid" Height="80" CanUserAddRows="True">
 
+            <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
+                <DataGridTextColumn Header="Type" />
+                    <DataGridTextColumn Header="Angle" Binding="{Binding Path=Angle}" />
+                <DataGridTextColumn Header="Distance" />
+                    <DataGridTextColumn Header="Z" Binding="{Binding Path=Z}"/>
+                <DataGridTextColumn Header="Pitch" />
+                <DataGridTextColumn Header="Roll" />
+                    <DataGridTemplateColumn Header="Cmd">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Move" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+        </DataGrid>
+        </StackPanel>
 
     </Grid>
 </Window>

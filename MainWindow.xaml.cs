@@ -56,6 +56,7 @@ namespace robot_teachbox
 
         private void InitializeControls()
         {
+            this.dataGrid.Items.Add(new { Name = "zero", Angle = "120", Z = "10" });
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
