@@ -1,7 +1,7 @@
 # robot-teachbox
 Virtual teaching box for Melfa Movemaster industrial robotic arm.
 
-![GUI](https://raw.githubusercontent.com/tonybjorkman/robot-teachbox/master/doc/screenshot_2020_08_20.png)
+![GUI](https://raw.githubusercontent.com/tonybjorkman/robot-teachbox/master/doc/screenshot_2020_08_20.PNG)
 
 This is a WPF application which will send serial output according to the legacy Melfa Basic V commands for basic robot movements. 
 This enables easy jogging of a robot without the physical teaching box connected and instead using a computer keyboard.
