@@ -2,31 +2,68 @@ using System;
 
 namespace robot_teachbox
 {
+
+    /// <summary>
+    /// Takes a Distance and Angle as input and stores the position as a X,Y-coordinates
+    /// </summary>
     public class PolarPosition
     {
+        public PolarPosition()
+        {
+            //just some default values to help out
+            Name = "unnamed";
+            Height = 200;
+            Distance = 300;
+        }
+        private double _distance;
+        /// <summary>
+        /// Distance set from origin (robot base)
+        /// </summary>
+
+        public string Name { get; set; }
         public double Distance 
         {
             get 
             {
-                return Math.Sqrt(x*x+y*y);
+                return _distance;
             } 
             set 
             {
-                y = Math.Sin(2*Math.PI*Angle/360)*Distance;
-                x = Math.Cos(2*Math.PI*Angle/360)*Distance;
+                _distance = value;
+                UpdateInternalXY();
             }
         }
+
+        public double GetCalculatedDistance()
+        {
+            return Math.Sqrt(x * x + y * y);
+        }
+
+        public double GetCalculatedAngle()
+        {
+            return Math.Atan(y / x) * 360 / (Math.PI * 2);
+        }
+
+        public void UpdateInternalXY()
+        {
+            SetPolarPos(Distance, Angle);
+        }
+
         public double Height{get {return z;} set { z = value;}}
+        public double ModelAngle { get; set; }
+        public double ModelDistance { get; set; }
+
+        private double _angle;
         public double Angle
         {
             get 
             {
-                return Math.Atan(y/x)*360/(Math.PI*2);
+                return _angle;
             }
             set 
             {
-                y = Math.Sin(2*Math.PI*value/360)*Distance;
-                x = Math.Cos(2*Math.PI*value/360)*Distance;   
+                _angle = value;
+                UpdateInternalXY();
             }
         }
         //roll-joint relative the robots own position. Normally it relates to global position which is bad for pouring use case.
@@ -36,6 +73,7 @@ namespace robot_teachbox
         public double x;
         public double y;
         public double z;
+
 
         public void SetPolarPos(double _distance, double _angle){
                 y = Math.Sin(2*Math.PI*_angle/360)*_distance;

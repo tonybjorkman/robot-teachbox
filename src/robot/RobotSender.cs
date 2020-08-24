@@ -82,9 +82,9 @@ namespace robot_teachbox
         /// </summary>
         /// <param name="circle"></param>
         public void MoveAroundCirclePoint(Circle3D circle){
-            WritePositionToController(20,circle.GetPositionAtAngle(circle.start_angle));
-            WritePositionToController(21,circle.GetPositionAtAngle((circle.start_angle+circle.stop_angle)/2));
-            WritePositionToController(22,circle.GetPositionAtAngle(circle.stop_angle));
+            WritePositionToController(20,circle.GetPositionAtAngle(circle.StartAngle));
+            WritePositionToController(21,circle.GetPositionAtAngle((circle.StartAngle+circle.StopAngle)/2));
+            WritePositionToController(22,circle.GetPositionAtAngle(circle.StopAngle));
             Serial.WriteLine($"MR {20},{21},{22}");
         }
 
