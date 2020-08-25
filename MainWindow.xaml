@@ -14,7 +14,7 @@
 
         </ComboBox>
 
-        <Button x:Name="button" Content="Connect" HorizontalAlignment="Left" Margin="177,40,0,0" VerticalAlignment="Top" Click="button_Click"/>
+        <Button x:Name="button" Content="Connect" HorizontalAlignment="Left" Margin="177,40,0,0" VerticalAlignment="Top" Click="Button_Click"/>
         <Label x:Name="stepSizeLabel" Content="Increments[+,-]:" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.52,0.592"/>
         <TextBlock x:Name="stepSizeText" HorizontalAlignment="Left" TextAlignment="Right" Margin="152,87,0,0" Text="{Binding CurrentMoveType.CurrentStep}" Width="80" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <Label x:Name="moveTypeLabel" Content="MovementType[A,X]:" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top"/>
@@ -38,36 +38,35 @@
                 <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="140" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btn_keyNumPad4"  Grid.Row="1" Click="standard_move_key_click" Grid.Column="0" Margin="2" Height="20"  RenderTransformOrigin="0.5,0.55" Canvas.Left="0" Canvas.Top="57">-Y[4]</Button>
-            <Button x:Name="btn_keyNumPad6" Grid.Row="1" Click="standard_move_key_click" Grid.Column="2" Margin="2" Height="20" Canvas.Left="95" Canvas.Top="60">+Y[6]</Button>
-            <Button x:Name="btn_keyNumPad2" Grid.Row="2" Click="standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="45" Canvas.Top="92">+X[2]</Button>
-            <Button x:Name="btn_keyNumPad8" Grid.Row="0" Click="standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="22">-X[8]</Button>
-            <Button x:Name="btn_keyNumPad5" Grid.Row="1" Click="standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="47">+Z[5]</Button>
-            <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
+            <Button x:Name="btn_keyNumPad4"  Grid.Row="1" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Height="20"  RenderTransformOrigin="0.5,0.55" Canvas.Left="0" Canvas.Top="57">-Y[4]</Button>
+            <Button x:Name="btn_keyNumPad6" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="2" Margin="2" Height="20" Canvas.Left="95" Canvas.Top="60">+Y[6]</Button>
+            <Button x:Name="btn_keyNumPad2" Grid.Row="2" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="45" Canvas.Top="92">+X[2]</Button>
+            <Button x:Name="btn_keyNumPad8" Grid.Row="0" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="22">-X[8]</Button>
+            <Button x:Name="btn_keyNumPad5" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="47">+Z[5]</Button>
+            <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
         </Grid>
         <StackPanel  Width="400" Height="100" Margin="369,266,31,18">
         <Label Content="Polarpositions" />
-            <DataGrid x:Name="dataGrid" Height="80" CanUserAddRows="True">
+            <DataGrid x:Name="dataGrid" Height="80" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True">
 
             <DataGrid.Columns>
 
-                    <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
-                <DataGridTextColumn Header="Type" />
+                    <!--DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
                     <DataGridTextColumn Header="Angle" Binding="{Binding Path=Angle}" />
-                <DataGridTextColumn Header="Distance" />
-                    <DataGridTextColumn Header="Z" Binding="{Binding Path=Z}"/>
-                <DataGridTextColumn Header="Pitch" />
-                <DataGridTextColumn Header="Roll" />
+                    <DataGridTextColumn Header="Distance" Binding="{Binding Path=Distance}"/>
+                    <DataGridTextColumn Header="Z" Binding="{Binding Path=Height}"/>
+                    <DataGridTextColumn Header="Pitch" Binding="{Binding Path=Pitch}"/>
+                    <DataGridTextColumn Header="Roll" Binding="{Binding Path=RelRoll}"/-->
                     <DataGridTemplateColumn Header="Cmd">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Move" />
+                                <Button Content="Move" Click="PolarPosRow_Button_Click" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                </DataGrid.Columns>
-        </DataGrid>
+            </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
 
     </Grid>

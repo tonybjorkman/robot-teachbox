@@ -15,16 +15,22 @@ using System.Windows.Shapes;
 using System.Threading;
 using System.Globalization;
 using System.IO.Ports;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace robot_teachbox
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// Works on top of the KeyPressHandler which is the original console-solution
+    /// which primarily accepts Keypresses.
     /// </summary>
     public partial class MainWindow : Window
     {
-        static CommandInterpreter CmdI;
+        static KeyPressInterpreter KeyPressInt;
+        static RobotSender RobotSend;
         static Settings ProgSettings;
+        bool keyEventActive = true;
 
 
         public MainWindow()
@@ -37,12 +43,20 @@ namespace robot_teachbox
             CultureInfo ci = CultureInfo.GetCultureInfo(culture);
             Thread.CurrentThread.CurrentCulture = ci;
             Console.SetOut(new view.ControlWriter(textBox));
-            ProgSettings = new Settings(new MyScreen());
-            Console.WriteLine("App started");
+
+            InitializeRobotObjects();
+            InitializeControls();
+        }
+
+        private void InitializeControls()
+        {
+            var employees = new ObservableCollection<PolarPosition>();
+            this.dataGrid.ItemsSource = (employees);
+            this.dataGrid.BeginEdit();
 
             var ports = SerialPort.GetPortNames();
 
-            foreach(string port in ports)
+            foreach (string port in ports)
             {
                 comboBox.Items.Add(port);
             }
@@ -50,24 +64,22 @@ namespace robot_teachbox
             {
                 comboBox.SelectedIndex = 0;
             }
-            this.DataContext = ProgSettings;
-            InitializeControls();
         }
 
-        private void InitializeControls()
+        private void InitializeRobotObjects()
         {
-            this.dataGrid.Items.Add(new { Name = "zero", Angle = "120", Z = "10" });
+            ProgSettings = new Settings(new MyScreen());
+            this.DataContext = ProgSettings;
+            Console.WriteLine("App started");
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.button.IsEnabled = false;
             Run();
         }
 
-        
-
-        private void standard_move_key_click(object sender, RoutedEventArgs e)
+        private void Standard_move_key_click(object sender, RoutedEventArgs e)
         {
             var btnPress = sender as Button;
             string key = btnPress.Name.Replace("btn_key", "");
@@ -75,7 +87,11 @@ namespace robot_teachbox
             try
             {
                 Enum.TryParse(key, out parsedKey);
-                ProcessKeyActivation(parsedKey);
+                var cmd = ProcessKeyActivation(parsedKey);
+                if (cmd != null)
+                {
+                    RobotSend.ProcessCommand((CmdMsg)cmd);
+                }
                 this.button.IsEnabled = false;
                 Console.WriteLine("got:" + parsedKey.ToString());
             } catch (ArgumentException ex)
@@ -88,29 +104,21 @@ namespace robot_teachbox
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            ProcessKeyActivation(e.Key);
-
-        }
-
-        private void ProcessKeyActivation(Key k)
-        {
-            switch (k)
+            if (keyEventActive)
             {
-                case Key.A:
-                    ChangeMovementType(Command.MoveAngle);
-                    break;
-                case Key.X:
-                    ChangeMovementType(Command.MoveXYZ);
-                    break;
-                default:
-                    CmdI.processKey(k);
-                    break;
+                CmdMsg? msg = ProcessKeyActivation(e.Key);
+                if (msg != null)
+                {
+                    RobotSend.ProcessCommand((CmdMsg)msg);
+                }
             }
         }
 
+
         private static void Run()
         {
-            CmdI = new CommandInterpreter(ProgSettings);
+            KeyPressInt = new KeyPressInterpreter(ProgSettings);
+            RobotSend = new RobotSender(ProgSettings.port);
         }
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -127,36 +135,52 @@ namespace robot_teachbox
             
         }
 
-        private void ChangeMovementType(Command cmd)
+        private CmdMsg? ProcessKeyActivation(Key k)
         {
-            if(cmd == Command.MoveAngle)
+            switch (k)
+            { // Special cases where we want to  do something in addition to the KeyPressInterpreter
+                case Key.A:
+                    UpdateMovementTypeView(Command.MoveAngle);
+                    break;
+                case Key.X:
+                    UpdateMovementTypeView(Command.MoveXYZ);
+                    break;
+            }
+            return KeyPressInt.processKey(k);
+        }
+
+        private void UpdateMovementTypeView(Command cmd)
+        {
+            if (cmd == Command.MoveAngle)
             {
                 this.radio1.IsChecked = false;
                 this.radio2.IsChecked = true;
-                CmdI.processKey(Key.A);
-                setViewMovementBtnLabels(cmd);
-            } else if(cmd == Command.MoveXYZ)
+                SetViewMovementBtnLabels(cmd);
+            }
+            else if (cmd == Command.MoveXYZ)
             {
-                CmdI.processKey(Key.X);
+                KeyPressInt.processKey(Key.X);
                 this.radio1.IsChecked = true;
                 this.radio2.IsChecked = false;
-                setViewMovementBtnLabels(cmd);
+                SetViewMovementBtnLabels(cmd);
             }
         }
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("radiobutton triggered");
             RadioButton r = sender as RadioButton;
             if (ProgSettings != null)
             {
                 if ((bool)this.radio1.IsChecked)
                 {
-                    CmdI.processKey(Key.X);
-                    setViewMovementBtnLabels(Command.MoveXYZ);
-                } else if ((bool)this.radio2.IsChecked)
+                    KeyPressInt.processKey(Key.X);
+                    SetViewMovementBtnLabels(Command.MoveXYZ);
+                }
+                else if ((bool)this.radio2.IsChecked)
                 {
-                    CmdI.processKey(Key.A);
-                    setViewMovementBtnLabels(Command.MoveAngle);
+                    KeyPressInt.processKey(Key.A);
+                    SetViewMovementBtnLabels(Command.MoveAngle);
                 }
             }
         }
@@ -178,7 +202,7 @@ namespace robot_teachbox
         { "btn_keyNumPad8", "-Shoulder[8]" }};
 
 
-        private void setViewMovementBtnLabels(Command movType)
+        private void SetViewMovementBtnLabels(Command movType)
         {
             Dictionary<string, string> btnNames=null;
             if(movType == Command.MoveAngle)
@@ -194,6 +218,29 @@ namespace robot_teachbox
             {
                 var btn = element as Button;
                 btn.Content = btnNames[btn.Name];
+            }
+        }
+
+        private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            keyEventActive = false;
+            Console.WriteLine("Keyinput disabled while editing");
+        }
+
+        private void DataGrid_LostFocus(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            keyEventActive = true;
+            Console.WriteLine("Edit finished, Keyinput enabled");
+        }
+
+        private void PolarPosRow_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var rows = this.dataGrid.SelectedCells;
+            var pos = rows.ElementAt(0).Item as PolarPosition;
+            //we only care about a single selection, a button should map to only its own row.
+            if (pos != null)
+            {
+                Console.WriteLine(pos.ToMelfaPosString());
             }
         }
     }

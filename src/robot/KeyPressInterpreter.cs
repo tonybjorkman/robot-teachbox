@@ -34,30 +34,45 @@ namespace robot_teachbox
 
     }
 
-
-    public class CommandInterpreter : IDisposable
+    /// <summary>
+    /// Responsible for converting a user input(a keyboard-input) into either a change in ProgramSettings or 
+    /// a robot movement command.
+    /// 
+    /// Contains state for features which are toggled. 
+    /// 
+    /// </summary>
+    public class KeyPressInterpreter : IDisposable
     {
         private Settings ProgSettings;
-        private delegate CmdMsg? KeyMapperDelegate(Key k);
-        private KeyMapperDelegate KeyMapper;
-        private RobotSender _robotSender;
+        //private RobotSender _robotSender;
 
-        public CommandInterpreter(Settings s){
+        public KeyPressInterpreter(Settings s){
             this.ProgSettings = s;
-            this._robotSender = new RobotSender(this.ProgSettings.port);
-            KeyMapper = GetXYZCmdMsgFromKey;
+            //this._robotSender = new RobotSender(this.ProgSettings.port);
         }
 
-        public void processKey(Key myKey){
+        public CmdMsg? processKey(Key myKey){
             myKey = NormalizeDigits(myKey);//TODO:
+            CmdMsg? msg = null;
 
-            CmdMsg? msg = KeyMapper(myKey);
+            //Prog contains state which dictates how to interpret msgs
+            if (ProgSettings.CurrentMoveType.Type == Command.MoveXYZ)
+            {
+                msg = GetXYZCmdMsgFromKey(myKey);
+            } else if(ProgSettings.CurrentMoveType.Type == Command.MoveAngle)
+            {
+                msg = GetAngleCommandFromKey(myKey);
+            }
             msg ??= StandardCommandKeys(myKey);
-            if(msg == null){ //The key has not triggered any robot commands but may still be valid key for settings
+
+
+            if (msg == null){ //The key has not triggered any robot commands but may still be valid key for settings
                 ChangeSettingsWithKey(myKey);
             } else {
-                _robotSender.ProcessCommand((CmdMsg)msg);
+                return (CmdMsg)msg; //return the robot command.
             }
+
+            return null;
         }
 
         private CmdMsg? StandardCommandKeys(Key myKey){
@@ -126,11 +141,9 @@ namespace robot_teachbox
                     ProgSettings.Dec();
                     break;
                 case Key.X:
-                    KeyMapper = GetXYZCmdMsgFromKey;
                     ProgSettings.SetMovType(Command.MoveXYZ);
                     break;
                 case Key.A:
-                    KeyMapper = GetAngleCommandFromKey;
                     ProgSettings.SetMovType(Command.MoveAngle);
                     break;
                 case Key.H:
@@ -147,7 +160,7 @@ namespace robot_teachbox
 
         public void Dispose()
         {
-            this._robotSender.Dispose();
+            //nothing to dispose so far
         }
     }
 }

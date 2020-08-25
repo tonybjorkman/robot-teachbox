@@ -5,7 +5,7 @@ namespace robot_teachbox
 {
     public class MovementType : INotifyPropertyChanged
     {
-        Command Type;
+        public Command Type;
         int MinStep;
         int MaxStep;
         int _currentStep;
