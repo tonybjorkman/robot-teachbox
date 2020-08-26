@@ -17,7 +17,7 @@ namespace robot_teachbox
         None
     }
 
-    public struct CmdMsg
+    public class CmdMsg
     {
 
         public CmdMsg(Command cmd, Vector3 v){
@@ -27,6 +27,10 @@ namespace robot_teachbox
 
         public Command Type;
         public Vector3 Vector;
+
+        //this member should be used instead of Vector and after a while Vector should be deprecated
+        public PolarPosition Position;
+        
 
         public bool isNone(){
             return Type==Command.None;

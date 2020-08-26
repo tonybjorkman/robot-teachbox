@@ -21,8 +21,8 @@
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextAlignment="Right" Margin="152,109,0,0" Text="{Binding CurrentMoveType.Name}" Width="80" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <StackPanel Margin="10" HorizontalAlignment="Left" Width="150" Height="100" MinHeight="100">
             <Label FontWeight="Bold">Movement mode</Label>
-            <RadioButton x:Name="radio1" GroupName="movement" IsChecked="True" Checked="RadioButton_Checked">XYZ-coordinates[X]</RadioButton>
-            <RadioButton x:Name="radio2" GroupName="movement" Checked="RadioButton_Checked">Joint movement[A]</RadioButton>
+            <RadioButton x:Name="radio1" GroupName="movement" IsChecked="True" Checked="MovementType_RadioButton_Checked">XYZ-coordinates[X]</RadioButton>
+            <RadioButton x:Name="radio2" GroupName="movement" Checked="MovementType_RadioButton_Checked">Joint movement[A]</RadioButton>
         </StackPanel>
 
         <Grid x:Name="numpadGrid" Margin="2" Height="108" Width="270" HorizontalAlignment="Left" VerticalAlignment="Bottom" >
@@ -46,10 +46,10 @@
             <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
         </Grid>
         <StackPanel  Width="400" Height="100" Margin="369,266,31,18">
-        <Label Content="Polarpositions" />
+            <Label Content="Polarpositions" />
             <DataGrid x:Name="dataGrid" Height="80" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True">
 
-            <DataGrid.Columns>
+                <DataGrid.Columns>
 
                     <!--DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
                     <DataGridTextColumn Header="Angle" Binding="{Binding Path=Angle}" />
@@ -65,9 +65,11 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-            </DataGrid.Columns>
+                </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
+        <Button x:Name="button1" Content="Stop consumer" HorizontalAlignment="Left" Click="button1_Click" Margin="207,142,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button2" Content="Send msg" HorizontalAlignment="Left" Click="button2_Click" Margin="207,121,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

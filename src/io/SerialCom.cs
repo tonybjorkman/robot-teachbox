@@ -1,3 +1,4 @@
+using robot_teachbox.src.main;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;  
@@ -22,7 +23,7 @@ namespace robot_teachbox
             _serialPort.ReadTimeout = 1000;
             _serialPort.RtsEnable = true;
             _serialPort.Open();
-            System.Console.WriteLine("Com port opened");
+            Logger.Instance.Log("Com port opened");
         }
 
         public SerialCom(): this("COM6") {}
@@ -47,7 +48,7 @@ namespace robot_teachbox
         public void StopReadThread(){
             _continue = false;
             ReadThread.Join();
-            System.Console.WriteLine("ReadThread closed");
+            Logger.Instance.Log("ReadThread closed");
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace robot_teachbox
         public void StartReadThread(){
             ReadThread = new Thread(this.Read);
             ReadThread.Start();
-            System.Console.WriteLine("ReadThread started");
+            Logger.Instance.Log("ReadThread started");
         }
 
 
@@ -78,7 +79,7 @@ namespace robot_teachbox
                 try
                 {
                     string message = _serialPort.ReadLine();
-                    Console.WriteLine(message);
+                    Logger.Instance.Log(message);
                 }
                 catch (TimeoutException e) {
                     //It will timeout alot but thats not a problem,

@@ -17,6 +17,9 @@ using System.Globalization;
 using System.IO.Ports;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using robot_teachbox.src.robot;
+using robot_teachbox.view;
+using robot_teachbox.src.main;
 
 namespace robot_teachbox
 {
@@ -32,10 +35,8 @@ namespace robot_teachbox
         static Settings ProgSettings;
         bool keyEventActive = true;
 
-
         public MainWindow()
         {
-
             InitializeComponent();
 
             Console.WriteLine("App started");
@@ -43,18 +44,32 @@ namespace robot_teachbox
             CultureInfo ci = CultureInfo.GetCultureInfo(culture);
             Thread.CurrentThread.CurrentCulture = ci;
             Console.SetOut(new view.ControlWriter(textBox));
-
+            Logger.Instance.Log("hello world");
             InitializeRobotObjects();
             InitializeControls();
+
+            //The UI-thread must be the one to print to console since its bound to a UI-control. 
+            //therefore implemented here as async code which runs for the entire life-time.
+            Func<Task> x = (async () => {
+                while (true)
+                {
+                    await Task.Delay(500);
+                    Logger.Instance.Print();
+
+                }
+            });
+            x();
+
         }
 
         private void InitializeControls()
         {
-            var employees = new ObservableCollection<PolarPosition>();
-            this.dataGrid.ItemsSource = (employees);
+            var grabPositions = new ObservableCollection<PositionGrab>();
+            this.dataGrid.ItemsSource = (grabPositions);
             this.dataGrid.BeginEdit();
 
             var ports = SerialPort.GetPortNames();
+            Closing += this.OnWindowClosing;
 
             foreach (string port in ports)
             {
@@ -90,7 +105,7 @@ namespace robot_teachbox
                 var cmd = ProcessKeyActivation(parsedKey);
                 if (cmd != null)
                 {
-                    RobotSend.ProcessCommand((CmdMsg)cmd);
+                    RobotSend.Send((CmdMsg)cmd);
                 }
                 this.button.IsEnabled = false;
                 Console.WriteLine("got:" + parsedKey.ToString());
@@ -109,7 +124,7 @@ namespace robot_teachbox
                 CmdMsg? msg = ProcessKeyActivation(e.Key);
                 if (msg != null)
                 {
-                    RobotSend.ProcessCommand((CmdMsg)msg);
+                    RobotSend.Send((CmdMsg)msg);
                 }
             }
         }
@@ -119,6 +134,7 @@ namespace robot_teachbox
         {
             KeyPressInt = new KeyPressInterpreter(ProgSettings);
             RobotSend = new RobotSender(ProgSettings.port);
+            RobotSend.StartProcess();
         }
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -166,7 +182,7 @@ namespace robot_teachbox
             }
         }
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        private void MovementType_RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("radiobutton triggered");
             RadioButton r = sender as RadioButton;
@@ -236,12 +252,28 @@ namespace robot_teachbox
         private void PolarPosRow_Button_Click(object sender, RoutedEventArgs e)
         {
             var rows = this.dataGrid.SelectedCells;
-            var pos = rows.ElementAt(0).Item as PolarPosition;
+            var pos = rows.ElementAt(0).Item as PositionGrab;
             //we only care about a single selection, a button should map to only its own row.
             if (pos != null)
             {
+                RobotSend.GrabPolar(pos);
                 Console.WriteLine(pos.ToMelfaPosString());
             }
+        }
+
+        public void OnWindowClosing(object sender, CancelEventArgs e )
+        {
+            RobotSend.Dispose();
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            RobotSend.Stop();
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            RobotSend.Send(KeyPressInt.processKey(Key.D8));
         }
     }
 }

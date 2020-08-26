@@ -1,32 +1,84 @@
+using robot_teachbox.src.main;
+using robot_teachbox.src.robot;
+using robot_teachbox.view;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace robot_teachbox
 {
     public class RobotSender: IDisposable
     {
         private SerialCom Serial;
+        public BlockingCollection<CmdMsg> CmdQueue { get; set; }
+        private readonly CancellationTokenSource StopToken;
 
         public RobotSender(string port){
             this.Serial = new SerialCom(port);
             this.Serial.StartReadThread();
-            /*var ports = this.Serial.GetAllPorts();
+            this.CmdQueue = new BlockingCollection<CmdMsg>();
+            this.StopToken = new CancellationTokenSource();
 
-            foreach (var port in ports){
-                System.Console.WriteLine($"port:{port}");
-            }*/
+        }
+
+        public void Stop()
+        {
+            StopToken.Cancel();
         }
 
         public void Dispose()
         {
             this.Serial.StopReadThread();
             this.Serial.Dispose();
+            this.StopToken.Cancel();
+            Logger.Instance.Log("RobotSender disposed");
+        }
+
+        public void StartProcess()
+        {
+            var tok = StopToken.Token;
+            var t = Task.Run(ConsumerLoop);
+            Logger.Instance.Log("Process initiated start");
+        }
+
+        public Task ConsumerLoop()
+        {
+            Debug.WriteLine("RobotSenderWorker started");
+
+            while(true)
+            {
+                try
+                {
+                    CmdMsg newCmd;
+                    this.CmdQueue.TryTake(out newCmd, -1, StopToken.Token);
+                    // process
+                    Debug.WriteLine("Received Msg:" + newCmd.ToString());
+                    ProcessCommand(newCmd);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
+            Debug.WriteLine("RobotSenderWorker finished");
+            return Task.CompletedTask;
+        }
+
+        public void Send(CmdMsg item)
+        {
+            Logger.Instance.Log("Added item to send queue");
+            this.CmdQueue.Add(item);
         }
 
         public string ByteArrayToString(char[] ba)
-{
+        {
         StringBuilder hex = new StringBuilder(ba.Length * 2);
         foreach (char b in ba)
             hex.AppendFormat("{0:X}", b);
@@ -53,18 +105,21 @@ namespace robot_teachbox
         /// </summary>
         /// <param name="pos">Position before it moves forward and grips</param>
         /// <param name="depth">The distance it moves forward to grip</param>
-        public void GrabPolar(PolarPosition pos, double depth){
+        public String GrabPolar(PositionGrab pos){
             MovePosition(pos.ToMelfaPosString());
             //Thread.Sleep(1300);
             ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(1)));
             Thread.Sleep(1300);
+            //await Task.Delay(1300);
             var grabPos = (PolarPosition) pos.Clone();
-            ProcessCommand(new CmdMsg(Command.ToolStraight, new Vector3((float)depth)));
+            ProcessCommand(new CmdMsg(Command.ToolStraight, new Vector3((float)pos.GrabLength)));
             //Thread.Sleep(3000);
             //Thread.Sleep(1300);
             ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(0)));
             Thread.Sleep(1300);
-            ProcessCommand(new CmdMsg(Command.ToolStraight, new Vector3((float)-depth)));
+            //await Task.Delay(1300);
+            ProcessCommand(new CmdMsg(Command.ToolStraight, new Vector3((float)-pos.GrabLength)));
+            return "";
         }
 
         /// <summary>
@@ -117,12 +172,12 @@ namespace robot_teachbox
         /// Degrees is anti-clockwise, 0* is straight ahead
         /// </summary>
         /// <returns></returns>
-        public string QueryPolarGrab(){
+        /*public string QueryPolarGrab(){
                 var pos = new PolarPosition();
                 pos.InputValues();
                 GrabPolar(pos,120);
                 return "";
-        }
+        }*/ //will be replaced since the console is no longer used to query for input.
 
 
         public void MovePosition(string melfaString){
@@ -150,15 +205,17 @@ namespace robot_teachbox
                 Command.ToolStraight => MoveToolStraight(msg.Vector.X),
                 Command.Where => "WH",
                 Command.Gripper => GripperAction((Vector3)msg.Vector),
-                Command.QueryPolar => QueryPolarGrab(),
+                Command.QueryPolar => GrabPolar((PositionGrab)msg.Position), 
                 Command.QueryPour => QueryPour(),
                 _  => null
             };
 
 
-            System.Console.WriteLine($"Processing message: {msg.Type} Vector: {msg.Vector.ToString()}");
+
+            Logger.Instance.Log($"Processing message: {msg.Type} Vector: {msg.Vector.ToString()}");
             Serial.WriteLine(melfaString);
         }
+
 
     }
 }
