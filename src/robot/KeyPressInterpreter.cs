@@ -25,6 +25,12 @@ namespace robot_teachbox
             Vector = v;
         }
 
+        public CmdMsg(Command cmd, PolarPosition p)
+        {
+            Type = cmd;
+            Position = p;
+        }
+
         public Command Type;
         public Vector3 Vector;
 

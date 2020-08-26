@@ -192,28 +192,46 @@ namespace robot_teachbox
 
         public void ProcessCommand(CmdMsg msg){
 
-             var melfaString = msg.Type switch {
-                Command.MoveXYZ => String.Format("DS {0},{1},{2}",
+            string str;
+             switch (msg.Type) 
+            {
+                case Command.MoveXYZ: 
+                    str = String.Format("DS {0},{1},{2}",
                                         msg.Vector.X,
                                         msg.Vector.Y,
-                                        msg.Vector.Z),
-                
-                Command.MoveAngle => String.Format("DJ {0},{1}",
+                                        msg.Vector.Z);
+                    Serial.WriteLine(str);
+                    break;
+
+                case Command.MoveAngle: 
+                    str = String.Format("DJ {0},{1}",
                                         msg.Vector.X,
                                         msg.Vector.Y
-                                        ),
-                Command.ToolStraight => MoveToolStraight(msg.Vector.X),
-                Command.Where => "WH",
-                Command.Gripper => GripperAction((Vector3)msg.Vector),
-                Command.QueryPolar => GrabPolar((PositionGrab)msg.Position), 
-                Command.QueryPour => QueryPour(),
-                _  => null
+                                        );
+                    Serial.WriteLine(str);
+                    break;
+                case Command.ToolStraight:
+                    str = MoveToolStraight(msg.Vector.X);
+                    Serial.WriteLine(str);
+                    break;
+                case Command.Where:
+                    Serial.WriteLine("WH");
+                    break;
+                case Command.Gripper:
+                    str = GripperAction((Vector3)msg.Vector);
+                    Serial.WriteLine("WH");
+                    break;
+                case Command.QueryPolar:
+                    GrabPolar((PositionGrab)msg.Position);
+                    break;
+                case Command.QueryPour:
+                    MoveAroundCirclePoint((Circle3D)msg.Position);
+                    break;
+                default:
+                    throw new NotImplementedException("No implementation to deal with this CmdMsg type");
             };
 
-
-
             Logger.Instance.Log($"Processing message: {msg.Type} Vector: {msg.Vector.ToString()}");
-            Serial.WriteLine(melfaString);
         }
 
 

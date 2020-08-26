@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:robot_teachbox"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="800" MinHeight="400"
+        Title="MainWindow" Height="600" Width="900" MinHeight="600" MinWidth="900"
         KeyDown="Window_KeyDown" FontFamily="Lucida Console">
     <Grid>
         <TextBox ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="textBox" HorizontalAlignment="Left" Margin="269,0,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="242" Width="500" Background="Black" Foreground="White" />
@@ -45,18 +45,11 @@
             <Button x:Name="btn_keyNumPad5" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="47">+Z[5]</Button>
             <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
         </Grid>
-        <StackPanel  Width="400" Height="100" Margin="369,266,31,18">
-            <Label Content="Polarpositions" />
-            <DataGrid x:Name="dataGrid" Height="80" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True">
-
+        <StackPanel MinHeight="250" Margin="269,247,10,119">
+            <Label Content="Polar Grab Position Move" />
+            <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="80" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" Width="585">
                 <DataGrid.Columns>
-
-                    <!--DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
-                    <DataGridTextColumn Header="Angle" Binding="{Binding Path=Angle}" />
-                    <DataGridTextColumn Header="Distance" Binding="{Binding Path=Distance}"/>
-                    <DataGridTextColumn Header="Z" Binding="{Binding Path=Height}"/>
-                    <DataGridTextColumn Header="Pitch" Binding="{Binding Path=Pitch}"/>
-                    <DataGridTextColumn Header="Roll" Binding="{Binding Path=RelRoll}"/-->
+                    <!-- DataGridTextColumn Header="Roll" Binding="{Binding Path=RelRoll}"/-->
                     <DataGridTemplateColumn Header="Cmd">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -64,12 +57,24 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
+                </DataGrid.Columns>
+            </DataGrid>
+            <Label Content="Circle Pour Position Move" />
+            <DataGrid x:Name="dataCirclePourGrid" HorizontalAlignment="Left" Height="80" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" Width="585">
+                <DataGrid.Columns>
+                    <!-- DataGridTextColumn Header="Roll" Binding="{Binding Path=RelRoll}"/-->
+                    <DataGridTemplateColumn Header="Cmd">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Move" Click="Circle3DPosRow_Button_Click" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
-        <Button x:Name="button1" Content="Stop consumer" HorizontalAlignment="Left" Click="button1_Click" Margin="207,142,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="button2" Content="Send msg" HorizontalAlignment="Left" Click="button2_Click" Margin="207,121,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button1" Content="Stop consumer" HorizontalAlignment="Left" Click="button1_Click" Margin="10,155,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button2" Content="Send msg" HorizontalAlignment="Left" Click="button2_Click" Margin="10,134,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

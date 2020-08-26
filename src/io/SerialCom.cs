@@ -71,6 +71,7 @@ namespace robot_teachbox
             } //Prevents the serial output from creating a buffer of commands which makes the robot unsreponsive
             Thread.Sleep(100);
             _serialPort.WriteLine(msg+"\r\n");
+            Logger.Instance.Log("#SERIAL O: " + msg);
         }
         private void Read()
         {
@@ -79,7 +80,7 @@ namespace robot_teachbox
                 try
                 {
                     string message = _serialPort.ReadLine();
-                    Logger.Instance.Log(message);
+                    Logger.Instance.Log("#SERIAL I: "+message);
                 }
                 catch (TimeoutException e) {
                     //It will timeout alot but thats not a problem,

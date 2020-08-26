@@ -65,8 +65,13 @@ namespace robot_teachbox
         private void InitializeControls()
         {
             var grabPositions = new ObservableCollection<PositionGrab>();
+            grabPositions.Add(new PositionGrab());
             this.dataGrid.ItemsSource = (grabPositions);
             this.dataGrid.BeginEdit();
+
+            var pourPositions = new ObservableCollection<Circle3D>();
+            pourPositions.Add(new Circle3D());
+            this.dataCirclePourGrid.ItemsSource = (pourPositions);
 
             var ports = SerialPort.GetPortNames();
             Closing += this.OnWindowClosing;
@@ -256,8 +261,22 @@ namespace robot_teachbox
             //we only care about a single selection, a button should map to only its own row.
             if (pos != null)
             {
-                RobotSend.GrabPolar(pos);
-                Console.WriteLine(pos.ToMelfaPosString());
+                //RobotSend.GrabPolar(pos);
+                RobotSend.Send(new CmdMsg(Command.QueryPolar,(PolarPosition)pos));
+                Console.WriteLine("Grab polar"+pos.ToMelfaPosString());
+            }
+        }
+
+
+        private void Circle3DPosRow_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var rows = this.dataCirclePourGrid.SelectedCells;
+            var pos = rows.ElementAt(0).Item as Circle3D;
+            //we only care about a single selection, a button should map to only its own row.
+            if (pos != null)
+            {
+                RobotSend.Send(new CmdMsg(Command.QueryPour, (PolarPosition)pos));
+                Console.WriteLine("Pour:"+pos.ToMelfaPosString());
             }
         }
 
@@ -266,14 +285,17 @@ namespace robot_teachbox
             RobotSend.Dispose();
         }
 
+        //For test
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             RobotSend.Stop();
         }
 
+        //for test
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             RobotSend.Send(KeyPressInt.processKey(Key.D8));
         }
+
     }
 }
