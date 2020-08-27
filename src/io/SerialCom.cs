@@ -87,6 +87,12 @@ namespace robot_teachbox
         /// </summary>
         /// <param name="msg">string to send</param>
         public void WriteLine(string msg){
+
+            if (!_serialPort.CtsHolding)
+            {
+                Logger.Instance.Log("#SERIAL: Awaiting Clear To Send from port..");
+            }
+
             while(!_serialPort.CtsHolding){  //wait with sending until its ready.
                 Thread.Sleep(50);
             } //Prevents the serial output from creating a buffer of commands which makes the robot unsreponsive

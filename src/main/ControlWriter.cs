@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace robot_teachbox.view
 {
@@ -25,7 +26,7 @@ namespace robot_teachbox.view
         {
             textbox.Text += value;
         }
-
+        
         public override Encoding Encoding
         {
             get { return Encoding.ASCII; }

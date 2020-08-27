@@ -2,6 +2,7 @@ using System;
 using static System.Console;
 using System.Numerics;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace robot_teachbox
 {
@@ -56,12 +57,12 @@ namespace robot_teachbox
         private Settings ProgSettings;
         //private RobotSender _robotSender;
 
-        public KeyPressInterpreter(Settings s){
+        public KeyPressInterpreter(Settings s) {
             this.ProgSettings = s;
             //this._robotSender = new RobotSender(this.ProgSettings.port);
         }
 
-        public CmdMsg? processKey(Key myKey){
+        public CmdMsg? processKey(Key myKey) {
             myKey = NormalizeDigits(myKey);//TODO:
             CmdMsg? msg = null;
 
@@ -69,14 +70,14 @@ namespace robot_teachbox
             if (ProgSettings.CurrentMoveType.Type == Command.MoveXYZ)
             {
                 msg = GetXYZCmdMsgFromKey(myKey);
-            } else if(ProgSettings.CurrentMoveType.Type == Command.MoveAngle)
+            } else if (ProgSettings.CurrentMoveType.Type == Command.MoveAngle)
             {
                 msg = GetAngleCommandFromKey(myKey);
             }
             msg ??= StandardCommandKeys(myKey);
 
 
-            if (msg == null){ //The key has not triggered any robot commands but may still be valid key for settings
+            if (msg == null) { //The key has not triggered any robot commands but may still be valid key for settings
                 ChangeSettingsWithKey(myKey);
             } else {
                 return (CmdMsg)msg; //return the robot command.
@@ -85,32 +86,37 @@ namespace robot_teachbox
             return null;
         }
 
-        private CmdMsg? StandardCommandKeys(Key myKey){
+        private CmdMsg? StandardCommandKeys(Key myKey) {
             return myKey switch
-                {
-                    Key.W => new CmdMsg(Command.Where, new Vector3()),
-                    Key.O => new CmdMsg(Command.Gripper, new Vector3(1)),
-                    Key.C => new CmdMsg(Command.Gripper, new Vector3(0)),
-                    Key.Q => new CmdMsg(Command.QueryPolar, new Vector3(0)),
-                    Key.P => new CmdMsg(Command.QueryPour, new Vector3(0)),
-                    _ => null
-                };
+            {
+                Key.W => new CmdMsg(Command.Where, new Vector3()),
+                Key.O => new CmdMsg(Command.Gripper, new Vector3(1)),
+                Key.C => new CmdMsg(Command.Gripper, new Vector3(0)),
+                Key.Q => new CmdMsg(Command.QueryPolar, new Vector3(0)),
+                Key.P => new CmdMsg(Command.QueryPour, new Vector3(0)),
+                _ => null
+            };
         }
-        private CmdMsg? GetXYZCmdMsgFromKey(Key myKey){
-                var stp = ProgSettings.GetCurrentStep();
-                return myKey switch
-                {
-                    Key.D2 => new CmdMsg(Command.MoveXYZ, new Vector3(1,0,0)*stp),
-                    Key.D8 => new CmdMsg(Command.MoveXYZ, new Vector3(-1,0,0)*stp),
-                    Key.D6 => new CmdMsg(Command.MoveXYZ, new Vector3(0,1,0)*stp),
-                    Key.D4 => new CmdMsg(Command.MoveXYZ, new Vector3(0,-1,0)*stp),
-                    Key.D5 => new CmdMsg(Command.MoveXYZ, new Vector3(0,0,1)*stp),
-                    Key.D0 => new CmdMsg(Command.MoveXYZ, new Vector3(0,0,-1)*stp),
-                    Key.Down => new CmdMsg(Command.ToolStraight, new Vector3(1*stp,0,0)),
-                    Key.Up => new CmdMsg(Command.ToolStraight, new Vector3(-1*stp,0,0)),
-                    _ => null
-                };
+        private CmdMsg? GetXYZCmdMsgFromKey(Key myKey) {
+            var stp = ProgSettings.GetCurrentStep();
+            return myKey switch
+            {
+                Key.D2 => new CmdMsg(Command.MoveXYZ, new Vector3(1, 0, 0) * stp),
+                Key.D8 => new CmdMsg(Command.MoveXYZ, new Vector3(-1, 0, 0) * stp),
+                Key.D6 => new CmdMsg(Command.MoveXYZ, new Vector3(0, 1, 0) * stp),
+                Key.D4 => new CmdMsg(Command.MoveXYZ, new Vector3(0, -1, 0) * stp),
+                Key.D5 => new CmdMsg(Command.MoveXYZ, new Vector3(0, 0, 1) * stp),
+                Key.D0 => new CmdMsg(Command.MoveXYZ, new Vector3(0, 0, -1) * stp),
+                Key.Down => new CmdMsg(Command.ToolStraight, new Vector3(1 * stp, 0, 0)),
+                Key.Up => new CmdMsg(Command.ToolStraight, new Vector3(-1 * stp, 0, 0)),
+                _ => null
+            };
         }
+
+        private Dictionary<Key, Key> keyReplaceMap = new Dictionary<Key, Key>{
+            {Key.Add,Key.OemPlus},
+            {Key.Subtract,Key.OemMinus}
+            };
 
         private Key NormalizeDigits(Key myKey)
         {
@@ -119,6 +125,12 @@ namespace robot_teachbox
                 var normalized = myKey - 40;//turns numpad  to digit 
                 return normalized;
             }
+
+            if (keyReplaceMap.ContainsKey(myKey))
+            {
+                myKey = keyReplaceMap[myKey];
+            }
+
             return myKey;
         }
 

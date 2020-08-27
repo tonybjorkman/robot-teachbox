@@ -9,6 +9,9 @@ namespace robot_teachbox.src.robot
 
         public double GrabLength { get; set; }
 
+        //Tells if the operation is grabbing or releasing grip
+        public bool Grab { get; set; }
+
         public PositionGrab()
         {
         }

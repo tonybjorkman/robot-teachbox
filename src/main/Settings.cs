@@ -102,6 +102,7 @@ namespace robot_teachbox
                 Command.MoveXYZ => XyzMove,
                 _ => null
             };
+            newType.CurrentStep = CurrentMoveType.CurrentStep; //Keep the same step length so we dont have any surprises.
             CurrentMoveType = newType;
             System.Console.WriteLine($"Movetype: {CurrentMoveType.ToString()}");
 

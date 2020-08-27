@@ -123,9 +123,9 @@ namespace robot_teachbox
         /// <returns>Melfa string command</returns>
         private string GripperAction(Vector3 v){
             if (Math.Round(v.X) == 1)
-            return "RN 10,35,2";
+            return "RN 10,35,2"; //Runs a program which contains start-delay-stop the relayout
             else if (Math.Round(v.X) == 0)
-            return "RN 40,70,2";
+            return "RN 40,70,2"; //Runs a program which contains start-delay-stop the relayout
             else
             return "";
         }
@@ -249,7 +249,7 @@ namespace robot_teachbox
                     break;
                 case Command.Gripper:
                     str = GripperAction((Vector3)msg.Vector);
-                    Serial.WriteLine("WH");
+                    Serial.WriteLine(str);
                     break;
                 case Command.QueryPolar:
                     GrabPolar((PositionGrab)msg.Position);

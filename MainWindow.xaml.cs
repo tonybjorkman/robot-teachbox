@@ -134,6 +134,12 @@ namespace robot_teachbox
                 {
                     RobotSend.Send((CmdMsg)msg);
                 }
+
+                if (e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Left || e.Key == Key.Right)
+                {
+                    // dont let the arrowkeys change control focus(tab between controls)
+                    e.Handled = true;
+                }
             }
         }
 
@@ -207,7 +213,11 @@ namespace robot_teachbox
         { "btn_keyNumPad4", "-Y[4]" },
         { "btn_keyNumPad5", "+Z[5]" },
         { "btn_keyNumPad6", "+Y[6]" },
-        { "btn_keyNumPad8", "-X[8]" }};
+        { "btn_keyNumPad8", "-X[8]" },
+        { "btn_keyUp", "-TStrght[▲]" },
+        { "btn_keyDown", "+TStrght[▼]" },
+        { "btn_keyLeft", "[◄]" },
+        { "btn_keyRight", "[►]" }};
 
         Dictionary<string, string> numpadNameMapAngle = new Dictionary<string, string> {
         { "btn_keyNumPad0", "-Elbow[0]" },
@@ -215,7 +225,11 @@ namespace robot_teachbox
         { "btn_keyNumPad4", "-Waist[4]" },
         { "btn_keyNumPad5", "+Shoulder[5]" },
         { "btn_keyNumPad6", "+Waist[6]" },
-        { "btn_keyNumPad8", "-Shoulder[8]" }};
+        { "btn_keyNumPad8", "-Shoulder[8]" },
+        { "btn_keyUp", "-Pitch[▲]" },
+        { "btn_keyDown", "+Pitch[▼]" },
+        { "btn_keyLeft", "+Roll[◄]" },
+        { "btn_keyRight", "-Roll[►]" }};
 
 
         private void SetViewMovementBtnLabels(Command movType)
@@ -233,7 +247,11 @@ namespace robot_teachbox
             foreach(var element in btns)
             {
                 var btn = element as Button;
-                btn.Content = btnNames[btn.Name];
+                //Only update the buttons associated with movementtype
+                if (btnNames.Keys.Contains(btn.Name))
+                {
+                    btn.Content = btnNames[btn.Name];
+                }
             }
         }
 
@@ -297,6 +315,11 @@ namespace robot_teachbox
         private void exitClicked(object sender, RoutedEventArgs e)
         {
             System.Windows.Application.Current.Shutdown();
+        }
+
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+
         }
     }
 }

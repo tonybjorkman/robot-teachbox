@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:robot_teachbox"
+        xmlns:src="clr-namespace:robot_teachbox.src.main"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="900" MinHeight="800" MinWidth="800"
         KeyDown="Window_KeyDown" FontFamily="Lucida Console">
@@ -32,15 +33,24 @@
                 <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="90" />
+
             </Grid.ColumnDefinitions>
-            <Button x:Name="btn_keyNumPad4"  Grid.Row="1" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Height="20"  RenderTransformOrigin="0.5,0.55" Canvas.Left="0" Canvas.Top="57">-Y[4]</Button>
-            <Button x:Name="btn_keyNumPad6" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="2" Margin="2" Height="20" Canvas.Left="95" Canvas.Top="60">+Y[6]</Button>
-            <Button x:Name="btn_keyNumPad2" Grid.Row="2" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="45" Canvas.Top="92">+X[2]</Button>
-            <Button x:Name="btn_keyNumPad8" Grid.Row="0" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="22">-X[8]</Button>
-            <Button x:Name="btn_keyNumPad5" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="47">+Z[5]</Button>
-            <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
-            <Button x:Name="btn_keyO" Grid.Row="2" Click="Standard_move_key_click" Grid.Column="3" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">Open[O]</Button>
-            <Button x:Name="btn_keyC" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="3" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">Close[C]</Button>
+            <Button x:Name="btn_keyNumPad4"  Grid.Row="1" Click="Standard_move_key_click" Grid.Column="4" Margin="2" Height="20"  RenderTransformOrigin="0.5,0.55" Canvas.Left="0" Canvas.Top="57">-Y[4]</Button>
+            <Button x:Name="btn_keyNumPad6" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="6" Margin="2" Height="20" Canvas.Left="95" Canvas.Top="60">+Y[6]</Button>
+            <Button x:Name="btn_keyNumPad2" Grid.Row="2" Click="Standard_move_key_click" Grid.Column="5" Margin="2" Height="20" Canvas.Left="45" Canvas.Top="92">+X[2]</Button>
+            <Button x:Name="btn_keyNumPad8" Grid.Row="0" Click="Standard_move_key_click" Grid.Column="5" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="22">-X[8]</Button>
+            <Button x:Name="btn_keyNumPad5" Grid.Row="1" Click="Standard_move_key_click" Grid.Column="5" Margin="2" Height="20" Canvas.Left="50" Canvas.Top="47">+Z[5]</Button>
+            <Button x:Name="btn_keyNumPad0" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="4" Margin="2" Grid.ColumnSpan="2" Height="20" Canvas.Left="50" Canvas.Top="70">-Z[0]</Button>
+            <Button x:Name="btn_keyO" Grid.Row="0" Click="Standard_move_key_click" Grid.Column="2" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">Open[O]</Button>
+            <Button x:Name="btn_keyC" Grid.Row="0" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">Close[C]</Button>
+            <Button x:Name="btn_keyUp" Grid.Row="2" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">-TStrght[▲]</Button>
+            <Button x:Name="btn_keyDown" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="1" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">+TStrght[▼]</Button>
+            <Button x:Name="btn_keyLeft" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="0" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">[◄]</Button>
+            <Button x:Name="btn_keyRight" Grid.Row="3" Click="Standard_move_key_click" Grid.Column="2" Margin="2" Grid.ColumnSpan="1" Height="20" Canvas.Left="50" Canvas.Top="70">[►]</Button>
+
         </Grid>
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"  DockPanel.Dock="Bottom"/>
 
@@ -49,7 +59,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"  DockPanel.Dock="Bottom"/>
 
             <StackPanel HorizontalAlignment="Left">
-            <TextBox ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="textBox" HorizontalAlignment="Left" Margin="5" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="242"  Background="Black" Foreground="White" Width="700" />
+                <TextBox src:TextBoxBehaviour.ScrollOnTextChanged="True" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="textBox" HorizontalAlignment="Left" Margin="5" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="242"  Background="Black" Foreground="White" Width="700" />
 
                 
                 <Label Content="Polar Grab Position Move" />
