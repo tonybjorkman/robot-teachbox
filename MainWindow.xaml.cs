@@ -275,8 +275,10 @@ namespace robot_teachbox
             }
         }
 
-        public void OnWindowClosing(object sender, CancelEventArgs e )
+        public async void OnWindowClosing(object sender, CancelEventArgs e )
         {
+            Logger.Instance.Log("Exiting application");
+            await Task.Delay(1000); //Give the logger time to show exit.
             RobotSend.Dispose();
         }
 
@@ -292,5 +294,9 @@ namespace robot_teachbox
             RobotSend.Send(KeyPressInt.processKey(Key.D8));
         }
 
+        private void exitClicked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
     }
 }
