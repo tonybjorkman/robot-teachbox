@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Text;
 using System.Threading;
@@ -19,13 +20,13 @@ namespace robot_teachbox
         private SerialCom Serial;
         public BlockingCollection<CmdMsg> CmdQueue { get; set; }
         private readonly CancellationTokenSource StopToken;
+        private Task ConsumerLoopTask;
 
-        public RobotSender(string port){
-            this.Serial = new SerialCom(port);
-            this.Serial.StartReadThread();
+        public RobotSender(){
+
             this.CmdQueue = new BlockingCollection<CmdMsg>();
             this.StopToken = new CancellationTokenSource();
-
+            this.Serial = new SerialCom();
         }
 
         public void Stop()
@@ -41,10 +42,32 @@ namespace robot_teachbox
             Logger.Instance.Log("RobotSender disposed");
         }
 
+        public bool IsConnected()
+        {
+            return this.Serial.IsConnected();
+        }
+
+        public bool OpenPort(string port)
+        {
+            try
+            {
+                this.Serial.OpenPort(port);
+                this.Serial.StartReadThread();
+                return true;
+            } catch (ArgumentException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
         public void StartProcess()
         {
             var tok = StopToken.Token;
-            var t = Task.Run(ConsumerLoop);
+            ConsumerLoopTask = Task.Run(ConsumerLoop);
             Logger.Instance.Log("Process initiated start");
         }
 
@@ -60,7 +83,14 @@ namespace robot_teachbox
                     this.CmdQueue.TryTake(out newCmd, -1, StopToken.Token);
                     // process
                     Debug.WriteLine("Received Msg:" + newCmd.ToString());
-                    ProcessCommand(newCmd);
+                    if (Serial.IsConnected())
+                    {
+                        ProcessCommand(newCmd);
+                    } 
+                    else
+                    {
+                        Logger.Instance.Log($"Not connected, discarding command {newCmd.Type}");
+                    }
                 }
                 catch (OperationCanceledException)
                 {

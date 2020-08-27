@@ -55,12 +55,13 @@ namespace robot_teachbox
                 {
                     await Task.Delay(500);
                     Logger.Instance.Print();
-
                 }
             });
             x();
 
         }
+
+
 
         private void InitializeControls()
         {
@@ -90,13 +91,16 @@ namespace robot_teachbox
         {
             ProgSettings = new Settings(new MyScreen());
             this.DataContext = ProgSettings;
-            Console.WriteLine("App started");
+            KeyPressInt = new KeyPressInterpreter(ProgSettings);
+            RobotSend = new RobotSender();
+            RobotSend.StartProcess();
+            Console.WriteLine("App started, select COM-port and press connect");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.button.IsEnabled = false;
-            Run();
+            
+            this.button.IsEnabled = !RobotSend.OpenPort(ProgSettings.port);
         }
 
         private void Standard_move_key_click(object sender, RoutedEventArgs e)
@@ -112,7 +116,6 @@ namespace robot_teachbox
                 {
                     RobotSend.Send((CmdMsg)cmd);
                 }
-                this.button.IsEnabled = false;
                 Console.WriteLine("got:" + parsedKey.ToString());
             } catch (ArgumentException ex)
             {
@@ -132,14 +135,6 @@ namespace robot_teachbox
                     RobotSend.Send((CmdMsg)msg);
                 }
             }
-        }
-
-
-        private static void Run()
-        {
-            KeyPressInt = new KeyPressInterpreter(ProgSettings);
-            RobotSend = new RobotSender(ProgSettings.port);
-            RobotSend.StartProcess();
         }
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -286,13 +281,13 @@ namespace robot_teachbox
         }
 
         //For test
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void testButton1_Click(object sender, RoutedEventArgs e)
         {
-            RobotSend.Stop();
+            Logger.Instance.Log("Connected="+RobotSend.IsConnected());
         }
 
         //for test
-        private void button2_Click(object sender, RoutedEventArgs e)
+        private void testButton2_Click(object sender, RoutedEventArgs e)
         {
             RobotSend.Send(KeyPressInt.processKey(Key.D8));
         }

@@ -13,23 +13,41 @@ namespace robot_teachbox
 
         private Thread ReadThread;
 
-        public SerialCom(string port){
+        public SerialCom(){
             _serialPort = new SerialPort();
             _serialPort.BaudRate = 9600;
             _serialPort.DataBits = 8;
             _serialPort.Parity = Parity.Even;
             _serialPort.StopBits = StopBits.Two;
-            _serialPort.PortName=port;
             _serialPort.ReadTimeout = 1000;
             _serialPort.RtsEnable = true;
-            _serialPort.Open();
-            Logger.Instance.Log("Com port opened");
         }
 
-        public SerialCom(): this("COM6") {}
+        public void OpenPort(string port)
+        {
+            try
+            {
+                _serialPort.PortName = port;
+                _serialPort.Open();
+                Logger.Instance.Log($"Com port {port} opened successfully");
+            } catch (UnauthorizedAccessException e)
+            {
+                Logger.Instance.Log(e.Message);
+                throw;
+            } catch (ArgumentException e)
+            {
+                Logger.Instance.Log(e.Message);
+                throw;
+            }
+        }
 
         ~SerialCom(){
             _serialPort.Close();
+        }
+
+        public bool IsConnected()
+        {
+            return _serialPort.IsOpen;
         }
 
         public List<string> GetAllPorts()
@@ -46,9 +64,12 @@ namespace robot_teachbox
         /// Stop Thread used for continously reading and outputting serial in data
         /// </summary>
         public void StopReadThread(){
-            _continue = false;
-            ReadThread.Join();
-            Logger.Instance.Log("ReadThread closed");
+            if (ReadThread != null)
+            {
+                _continue = false;
+                ReadThread.Join();
+                Logger.Instance.Log("ReadThread closed");
+            }
         }
 
         /// <summary>

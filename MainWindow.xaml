@@ -14,11 +14,15 @@
 
         </ComboBox>
 
-        <Button x:Name="button" Content="Connect" HorizontalAlignment="Left" Margin="177,40,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        <Button x:Name="button" IsEnabled="True" Content="Connect" HorizontalAlignment="Left" Margin="177,40,0,0" VerticalAlignment="Top" Click="Button_Click"/>
         <Label x:Name="stepSizeLabel" Content="Increments[+,-]:" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.52,0.592"/>
         <TextBlock x:Name="stepSizeText" HorizontalAlignment="Left" TextAlignment="Right" Margin="152,87,0,0" Text="{Binding CurrentMoveType.CurrentStep}" Width="80" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <Label x:Name="moveTypeLabel" Content="MovementType[A,X]:" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top"/>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextAlignment="Right" Margin="152,109,0,0" Text="{Binding CurrentMoveType.Name}" Width="80" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <StackPanel Margin="172,131,0,0">
+            <Button x:Name="button1" Margin="5" Content="Test1" HorizontalAlignment="Left" Click="testButton1_Click"  VerticalAlignment="Top"/>
+            <Button x:Name="button2" Margin="5" Content="Test2" HorizontalAlignment="Left" Click="testButton2_Click"  VerticalAlignment="Top"/>
+        </StackPanel>
         <StackPanel Margin="10" HorizontalAlignment="Left" Width="150" Height="100" MinHeight="100">
             <Label FontWeight="Bold">Movement mode</Label>
             <RadioButton x:Name="radio1" GroupName="movement" IsChecked="True" Checked="MovementType_RadioButton_Checked">XYZ-coordinates[X]</RadioButton>
@@ -73,8 +77,6 @@
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
-        <Button x:Name="button1" Content="Stop consumer" HorizontalAlignment="Left" Click="button1_Click" Margin="10,155,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="button2" Content="Send msg" HorizontalAlignment="Left" Click="button2_Click" Margin="10,134,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
