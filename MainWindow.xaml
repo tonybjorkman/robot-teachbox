@@ -71,7 +71,9 @@
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <Button Content="Run" Click="PolarPosRow_Button_Click" />
-                                            <Button x:Name="GotoGrab" Content="Goto" Click="PolarPosRow_GotoButton_Click" />
+                                            <Button x:Name="GotoGrab" Content="Goto" Click="DataGrid_GotoButton_Click" />
+                                            <Button x:Name="SetGrab" Content="Set" Click="DataGrid_SetButton_Click" />
+
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -82,7 +84,7 @@
                 <Label Content="Circle Pour Position Move" />
                 <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5">
 
-                    <DataGrid x:Name="dataCirclePourGrid" Height="160" HorizontalAlignment="Left" Width="700"  CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
+                    <DataGrid x:Name="dataCirclePourGrid" Height="160" HorizontalAlignment="Left" Width="700"  RowEditEnding="dataCirclePourGrid_RowEditEnding" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -90,7 +92,9 @@
                                         <StackPanel Orientation="Horizontal">
 
                                             <Button Content="Run" Click="Circle3DPosRow_Button_Click" />
-                                            <Button x:Name="GotoCircle" Content="Goto" Click="PolarPosRow_GotoButton_Click" />
+                                            <Button x:Name="GotoCircle" Content="Goto" Click="DataGrid_GotoButton_Click" />
+                                            <Button x:Name="SetCircle" Content="Set" Click="DataGrid_SetButton_Click" />
+
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

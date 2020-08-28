@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 
 namespace robot_teachbox
 {
@@ -15,6 +16,21 @@ namespace robot_teachbox
             Height = 200;
             Distance = 300;
         }
+
+
+        // Where string = +10,+380.00,300.00,+50.00,+40,R,A,C
+
+        public PolarPosition(string where)
+        {
+            var elements = where.Split(",");
+            x = Double.Parse(elements[0]);
+            y = Double.Parse(elements[1]);
+            z =  Double.Parse(elements[2]);
+            Pitch = Double.Parse(elements[3]);
+            RelRoll = Double.Parse(elements[4]);
+
+        }
+
         private double _distance;
         /// <summary>
         /// Distance set from origin (robot base)
@@ -114,5 +130,13 @@ namespace robot_teachbox
                 return output;
         }
 
+        internal void UpdatePosition(PolarPosition rowPos)
+        {
+            x = rowPos.x;
+            y = rowPos.y;
+            z = rowPos.z;
+            Pitch = rowPos.Pitch;
+            RelRoll = rowPos.RelRoll;
+        }
     }
 }

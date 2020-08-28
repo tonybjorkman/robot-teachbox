@@ -20,6 +20,8 @@ using System.ComponentModel;
 using robot_teachbox.src.robot;
 using robot_teachbox.view;
 using robot_teachbox.src.main;
+using System.IO;
+using System.Text.Json;
 
 namespace robot_teachbox
 {
@@ -65,14 +67,15 @@ namespace robot_teachbox
 
         private void InitializeControls()
         {
-            var grabPositions = new ObservableCollection<PositionGrab>();
+            /*var grabPositions = new ObservableCollection<PositionGrab>();
             grabPositions.Add(new PositionGrab());
             this.dataGrid.ItemsSource = (grabPositions);
             this.dataGrid.BeginEdit();
 
             var pourPositions = new ObservableCollection<Circle3D>();
             pourPositions.Add(new Circle3D());
-            this.dataCirclePourGrid.ItemsSource = (pourPositions);
+            this.dataCirclePourGrid.ItemsSource = (pourPositions);*/
+            LoadPositionFromFile();
 
             var ports = SerialPort.GetPortNames();
             Closing += this.OnWindowClosing;
@@ -84,6 +87,51 @@ namespace robot_teachbox
             if (ports.Count() > 0)
             {
                 comboBox.SelectedIndex = 0;
+            }
+        }
+
+        private void SavePositionsToFile()
+        {
+            string workingDirectory = Environment.CurrentDirectory;
+            // or: Directory.GetCurrentDirectory() gives the same result
+            // This will get the current PROJECT directory
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+            string fullPathGrab = System.IO.Path.Combine(projectDirectory, "grab_saved.txt");
+            string fullPathCircle = System.IO.Path.Combine(projectDirectory, "circle_saved.txt");
+
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fullPathGrab))
+            {
+                var gridJson = JsonSerializer.Serialize(this.dataGrid.ItemsSource);
+                file.Write(gridJson);
+            }
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fullPathCircle))
+            {
+                var gridJson = JsonSerializer.Serialize(this.dataCirclePourGrid.ItemsSource);
+                file.Write(gridJson);
+            }
+        }
+
+        //#TODO: remove duplication
+        private void LoadPositionFromFile()
+        {
+            string workingDirectory = Environment.CurrentDirectory;
+            // or: Directory.GetCurrentDirectory() gives the same result
+            // This will get the current PROJECT directory
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+            string fullPathGrab = System.IO.Path.Combine(projectDirectory, "grab_saved.txt");
+            string fullPathCircle = System.IO.Path.Combine(projectDirectory, "circle_saved.txt");
+
+            using (System.IO.StreamReader file = new System.IO.StreamReader(fullPathGrab))
+            {
+                var gridJson = file.ReadToEnd();
+                var positions = JsonSerializer.Deserialize<ObservableCollection<PositionGrab>>(gridJson);
+                this.dataGrid.ItemsSource=positions;
+            }
+            using (System.IO.StreamReader file = new System.IO.StreamReader(fullPathCircle))
+            {
+                var gridJson = file.ReadToEnd();
+                var positions = JsonSerializer.Deserialize<ObservableCollection<Circle3D>>(gridJson);
+                this.dataCirclePourGrid.ItemsSource = positions;
             }
         }
 
@@ -265,6 +313,8 @@ namespace robot_teachbox
         {
             keyEventActive = true;
             Console.WriteLine("Edit finished, Keyinput enabled");
+            
+            //this.dataGrid.CommitEdit();
         }
 
         private void PolarPosRow_Button_Click(object sender, RoutedEventArgs e)
@@ -296,6 +346,7 @@ namespace robot_teachbox
         public async void OnWindowClosing(object sender, CancelEventArgs e )
         {
             Logger.Instance.Log("Exiting application");
+            SavePositionsToFile();
             await Task.Delay(1000); //Give the logger time to show exit.
             RobotSend.Dispose();
         }
@@ -303,13 +354,13 @@ namespace robot_teachbox
         //For test
         private void testButton1_Click(object sender, RoutedEventArgs e)
         {
-            Logger.Instance.Log("Connected="+RobotSend.IsConnected());
+            LoadPositionFromFile();
         }
 
         //for test
         private void testButton2_Click(object sender, RoutedEventArgs e)
         {
-            RobotSend.Send(KeyPressInt.processKey(Key.D8));
+            SavePositionsToFile();
         }
 
         private void exitClicked(object sender, RoutedEventArgs e)
@@ -322,7 +373,7 @@ namespace robot_teachbox
 
         }
 
-        private void PolarPosRow_GotoButton_Click(object sender, RoutedEventArgs e)
+        private void DataGrid_GotoButton_Click(object sender, RoutedEventArgs e)
         {
 
             Action<DataGrid> GotoSelectedGridPos = (grid) =>
@@ -352,6 +403,38 @@ namespace robot_teachbox
                 GotoSelectedGridPos(this.dataCirclePourGrid);
             }
 
+        }
+
+        private void DataGrid_SetButton_Click(object sender, RoutedEventArgs e)
+        {
+            Action<DataGrid> SetPosToCurrent = (grid) =>
+            {
+                //finish the edit-event and refresh items in case the
+                //previous selection was editing a cell.
+                grid.CommitEdit();
+                grid.Items.Refresh();
+                var rows = grid.SelectedCells;
+                var robotPosNow = RobotSend.GetPosition();
+                var rowPos = rows.ElementAt(0).Item as PolarPosition;
+                rowPos.UpdatePosition(robotPosNow);
+            };
+
+            var btn = sender as Button;
+
+            if (btn == null) { return; }
+            else if (btn.Name == "SetGrab")
+            {
+                SetPosToCurrent(this.dataGrid);
+            }
+            else if (btn.Name == "SetCircle")
+            {
+                SetPosToCurrent(this.dataCirclePourGrid);
+            }
+        }
+
+        private void dataCirclePourGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            Logger.Instance.Log("row eedit eneded");
         }
     }
 }

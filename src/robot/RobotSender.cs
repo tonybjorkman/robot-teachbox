@@ -231,6 +231,13 @@ namespace robot_teachbox
                 return ""; //if this is called by process command, let it send empty string.
         }
 
+        public PolarPosition GetPosition()
+        {
+            string posString = Serial.WriteRead("WH");
+            return new PolarPosition(posString);
+
+        }
+
         public void ProcessCommand(CmdMsg msg){
 
             string str;

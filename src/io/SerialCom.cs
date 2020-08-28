@@ -1,7 +1,8 @@
 using robot_teachbox.src.main;
 using System;
 using System.Collections.Generic;
-using System.IO.Ports;  
+using System.IO.Ports;
+using System.Net.NetworkInformation;
 using System.Threading; 
 
 namespace robot_teachbox
@@ -12,6 +13,7 @@ namespace robot_teachbox
         static bool _continue=true;
 
         private Thread ReadThread;
+        private object readLock = new object();
 
         public SerialCom(){
             _serialPort = new SerialPort();
@@ -100,14 +102,41 @@ namespace robot_teachbox
             _serialPort.WriteLine(msg+"\r\n");
             Logger.Instance.Log("#SERIAL O: " + msg);
         }
+
+        public string WriteRead(string msg)
+        {
+            string reply;
+            lock (readLock)
+            {
+                try
+                {
+                    WriteLine(msg);
+                    Logger.Instance.Log("WR: Awaiting read");
+                    _serialPort.ReadTimeout = 20000;
+                    reply = _serialPort.ReadLine();
+                    _serialPort.ReadTimeout = 200;
+                    Logger.Instance.Log("WR: Read " + reply);
+                } catch (TimeoutException)
+                {
+                    reply = "";
+                    Logger.Instance.Log("#SERIAL Timeout waiting for WHERE response");
+                }
+
+            }
+            return reply;
+        }
+
         private void Read()
         {
             while (_continue)
             {
                 try
                 {
-                    string message = _serialPort.ReadLine();
-                    Logger.Instance.Log("#SERIAL I: "+message);
+                    lock (readLock)
+                    {
+                        string message = _serialPort.ReadLine();
+                        Logger.Instance.Log("#SERIAL I: " + message);
+                    }
                 }
                 catch (TimeoutException e) {
                     //It will timeout alot but thats not a problem,
