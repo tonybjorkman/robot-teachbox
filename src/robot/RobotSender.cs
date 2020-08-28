@@ -131,21 +131,32 @@ namespace robot_teachbox
         }
 
         /// <summary>
-        /// Grabs object with the gripper starting as open at the supplied position and then moving depth mm in the tool direction.
+        /// Manipulates an object with the gripper. Either starting as open at the supplied position and then moving depth mm in the tool direction to grip and return or release and return.
+        /// Prereq: To grab, the gripper needs to be in an initialy open state.
         /// </summary>
         /// <param name="pos">Position before it moves forward and grips</param>
-        /// <param name="depth">The distance it moves forward to grip</param>
         public String GrabPolar(PositionGrab pos){
             MovePosition(pos.ToMelfaPosString());
             //Thread.Sleep(1300);
-            ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(1)));
+            
+            /*if (pos.Grab) //is this a grab operation? Then open before grabbing
+            {
+                ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(1))); //open
+            }*/
             Thread.Sleep(1300);
             //await Task.Delay(1300);
             var grabPos = (PolarPosition) pos.Clone();
             ProcessCommand(new CmdMsg(Command.ToolStraight, new Vector3((float)pos.GrabLength)));
             //Thread.Sleep(3000);
             //Thread.Sleep(1300);
-            ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(0)));
+            if (pos.Grab) //is this a grab or release operation?
+            {
+                ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(0))); //close
+            }
+            else
+            {
+                ProcessCommand(new CmdMsg(Command.Gripper, new Vector3(1))); //open
+            }
             Thread.Sleep(1300);
             //await Task.Delay(1300);
             ProcessCommand(new CmdMsg(Command.ToolStraight, new Vector3((float)-pos.GrabLength)));
@@ -256,6 +267,9 @@ namespace robot_teachbox
                     break;
                 case Command.QueryPour:
                     MoveAroundCirclePoint((Circle3D)msg.Position);
+                    break;
+                case Command.MovePosition:
+                    MovePosition(msg.Position.ToMelfaPosString());
                     break;
                 default:
                     throw new NotImplementedException("No implementation to deal with this CmdMsg type");

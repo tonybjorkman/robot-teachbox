@@ -50,8 +50,8 @@ namespace robot_teachbox
         }
 
         public double Height{get {return z;} set { z = value;}}
-        public double ModelAngle { get; set; }
-        public double ModelDistance { get; set; }
+        public double ModelAngle; //Stores the actual angle which calc x+y
+        public double ModelDistance; //stores actual distance which calc x+y
 
         private double _angle;
         public double Angle

@@ -15,7 +15,8 @@ namespace robot_teachbox
         QueryPolar,
         QueryPour,
         ToolStraight, //moves the tool tip in the same direction as its pointing to
-        None
+        None,
+        MovePosition //moves to a Polarposition with joint interpolation
     }
 
     public class CmdMsg
