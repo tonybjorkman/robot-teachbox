@@ -321,5 +321,37 @@ namespace robot_teachbox
         {
 
         }
+
+        private void PolarPosRow_GotoButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            Action<DataGrid> GotoSelectedGridPos = (grid) =>
+            {
+                //finish the edit-event and refresh items in case the
+                //previous selection was editing a cell.
+                grid.CommitEdit();
+                grid.Items.Refresh();
+                var rows = grid.SelectedCells;
+                var pos = rows.ElementAt(0).Item as PolarPosition;
+                if (pos != null)
+                {
+                    Logger.Instance.Log(pos.ToMelfaPosString());
+                    var msg = new CmdMsg(Command.MovePosition, pos);
+                    RobotSend.Send(msg);
+                }
+            };
+
+            var btn = sender as Button;
+
+            if (btn == null){ return; }
+            else if (btn.Name == "GotoGrab")
+            {
+                GotoSelectedGridPos(this.dataGrid);
+            } else if (btn.Name == "GotoCircle")
+            {
+                GotoSelectedGridPos(this.dataCirclePourGrid);
+            }
+
+        }
     }
 }

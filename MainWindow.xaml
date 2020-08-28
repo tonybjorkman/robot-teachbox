@@ -69,7 +69,10 @@
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Move" Click="PolarPosRow_Button_Click" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="Run" Click="PolarPosRow_Button_Click" />
+                                            <Button x:Name="GotoGrab" Content="Goto" Click="PolarPosRow_GotoButton_Click" />
+                                        </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -84,7 +87,11 @@
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Move" Click="Circle3DPosRow_Button_Click" />
+                                        <StackPanel Orientation="Horizontal">
+
+                                            <Button Content="Run" Click="Circle3DPosRow_Button_Click" />
+                                            <Button x:Name="GotoCircle" Content="Goto" Click="PolarPosRow_GotoButton_Click" />
+                                        </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
