@@ -46,7 +46,6 @@ namespace robot_teachbox
             CultureInfo ci = CultureInfo.GetCultureInfo(culture);
             Thread.CurrentThread.CurrentCulture = ci;
             Console.SetOut(new view.ControlWriter(textBox));
-            Logger.Instance.Log("hello world");
             InitializeRobotObjects();
             InitializeControls();
 
@@ -354,13 +353,18 @@ namespace robot_teachbox
         //For test
         private void testButton1_Click(object sender, RoutedEventArgs e)
         {
-            LoadPositionFromFile();
+            Type  t = dataGrid.ItemsSource.GetType().GetGenericArguments().Single();
+            var inst = Activator.CreateInstance(t);
+            Console.WriteLine(inst.ToString());
         }
 
         //for test
         private void testButton2_Click(object sender, RoutedEventArgs e)
         {
-            SavePositionsToFile();
+            var rows = this.dataGrid.SelectedCells;
+            var pos = rows.ElementAt(0).Item as PositionGrab;
+
+            Console.WriteLine("melfa:"+pos.ToMelfaPosString());
         }
 
         private void exitClicked(object sender, RoutedEventArgs e)
@@ -416,7 +420,16 @@ namespace robot_teachbox
                 var rows = grid.SelectedCells;
                 var robotPosNow = RobotSend.GetPosition();
                 var rowPos = rows.ElementAt(0).Item as PolarPosition;
-                rowPos.UpdatePosition(robotPosNow);
+                if (rowPos == null)  //
+                {
+                    Type t = dataGrid.ItemsSource.GetType().GetGenericArguments().Single();
+                    var position = Activator.CreateInstance(t) as PolarPosition;
+                    position.UpdatePosition(robotPosNow);
+                    grid.Items.Add(position);
+                } else
+                {
+                    rowPos.UpdatePosition(robotPosNow);
+                }
             };
 
             var btn = sender as Button;

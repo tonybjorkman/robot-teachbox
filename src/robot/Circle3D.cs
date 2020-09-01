@@ -20,10 +20,11 @@ namespace robot_teachbox
             //angle 0 = -90 in the unit circle representation.
             
             var tz = z+Radius*Math.Sin(((angle-90)/360)*2*Math.PI);
-            var tx = x+Radius*Math.Sin(2*Math.PI*Angle/360)*Math.Cos(2*Math.PI*(angle-90)/360);
+            var tx = x-Radius*Math.Sin(2*Math.PI*Angle/360)*Math.Cos(2*Math.PI*(angle-90)/360);
             var ty = y+Radius*Math.Cos(2*Math.PI*Angle/360)*Math.Cos(2*Math.PI*(angle-90)/360);
-            
+
             string output = $"{tx:F2},{ty:F2},{tz:F2},{-Angle+angle-90:F2},{90:F2}"; //Angle thing makes the origin for robot and not relative global(rotating with waist! dont want that)
+
             return output;
         }
 

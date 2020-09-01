@@ -26,9 +26,10 @@ namespace robot_teachbox
             x = Double.Parse(elements[0]);
             y = Double.Parse(elements[1]);
             z =  Double.Parse(elements[2]);
-            Pitch = Double.Parse(elements[3]);
-            RelRoll = Double.Parse(elements[4]);
-
+            _angle = GetCalculatedAngle();
+            TrueRoll = Double.Parse(elements[3])+_angle;
+            Pitch = Double.Parse(elements[4]);
+            
         }
 
         private double _distance;
@@ -60,6 +61,11 @@ namespace robot_teachbox
             return Math.Atan(y / x) * 360 / (Math.PI * 2);
         }
 
+        private double GetCalculatedAngle(double x, double y)
+        {
+            return Math.Atan(y / x) * 360 / (Math.PI * 2);
+        }
+
         public void UpdateInternalXY()
         {
             SetPolarPos(Distance, Angle);
@@ -83,7 +89,7 @@ namespace robot_teachbox
             }
         }
         //roll-joint relative the robots own position. Normally it relates to global position which is bad for pouring use case.
-        public double RelRoll { get; set; }
+        public double TrueRoll { get; set; }
         public double Pitch { get; set; }
 
         public double x;
@@ -121,12 +127,15 @@ namespace robot_teachbox
                 SetPolarPos(_distance,_angle);
                 Height = GetDouble("height in mm",100,600,400);
                 Pitch = GetDouble("pitch angle",-90,90,0);
-                RelRoll = GetDouble("roll angle",-120,120,0);  
+                TrueRoll = GetDouble("roll angle",-120,120,0);  
 
         }
 
+        //from my datamodel to the melfa.
         public string ToMelfaPosString(){
-                string output = $"{x:F2},{y:F2},{z:F2},{-Angle-90:F2},{Pitch+90:F2}"; //Angle thing makes the origin for robot and not relative global(rotating with waist! dont want that)
+            var whereRoll = TrueRoll -_angle;
+                                                        //Roll        pitch
+                string output = $"{x:F2},{y:F2},{z:F2},{whereRoll:F2},{Pitch:F2}"; //Angle thing makes the origin for robot and not relative global(rotating with waist! dont want that)
                 return output;
         }
 
@@ -135,8 +144,9 @@ namespace robot_teachbox
             x = rowPos.x;
             y = rowPos.y;
             z = rowPos.z;
+            _angle = GetCalculatedAngle();
             Pitch = rowPos.Pitch;
-            RelRoll = rowPos.RelRoll;
+            TrueRoll = rowPos.TrueRoll;
         }
     }
 }
