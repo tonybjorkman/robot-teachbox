@@ -36,7 +36,14 @@ namespace robot_teachbox
 
         public void Dispose()
         {
-            this.Serial.StopReadThread();
+            var task = this.Serial.StopReadThread();
+            Console.WriteLine("Waiting for serial readthread to close");
+            if (task != null)
+            {
+                task.Wait();
+            }
+            Console.WriteLine("Thread closed");
+
             this.Serial.Dispose();
             this.StopToken.Cancel();
             Logger.Instance.Log("RobotSender disposed");

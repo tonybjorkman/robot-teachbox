@@ -7,7 +7,7 @@
         xmlns:src="clr-namespace:robot_teachbox.src.main"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="900" MinHeight="800" MinWidth="800"
-        KeyDown="Window_KeyDown" FontFamily="Lucida Console">
+        KeyDown="Window_KeyDown" FontFamily="Lucida Console" >
 
 
     <DockPanel LastChildFill="False" >

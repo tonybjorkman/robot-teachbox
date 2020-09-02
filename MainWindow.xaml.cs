@@ -22,6 +22,7 @@ using robot_teachbox.view;
 using robot_teachbox.src.main;
 using System.IO;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace robot_teachbox
 {
@@ -46,6 +47,8 @@ namespace robot_teachbox
             CultureInfo ci = CultureInfo.GetCultureInfo(culture);
             Thread.CurrentThread.CurrentCulture = ci;
             Console.SetOut(new view.ControlWriter(textBox));
+            
+            Logger.Instance.SetControl(textBox);
             InitializeRobotObjects();
             InitializeControls();
 
@@ -66,14 +69,7 @@ namespace robot_teachbox
 
         private void InitializeControls()
         {
-            /*var grabPositions = new ObservableCollection<PositionGrab>();
-            grabPositions.Add(new PositionGrab());
-            this.dataGrid.ItemsSource = (grabPositions);
-            this.dataGrid.BeginEdit();
 
-            var pourPositions = new ObservableCollection<Circle3D>();
-            pourPositions.Add(new Circle3D());
-            this.dataCirclePourGrid.ItemsSource = (pourPositions);*/
             LoadPositionFromFile();
 
             var ports = SerialPort.GetPortNames();
@@ -342,12 +338,28 @@ namespace robot_teachbox
             }
         }
 
-        public async void OnWindowClosing(object sender, CancelEventArgs e )
+        public void OnWindowClosing(object sender, CancelEventArgs e )
         {
+            
             Logger.Instance.Log("Exiting application");
             SavePositionsToFile();
-            await Task.Delay(1000); //Give the logger time to show exit.
+            //await Task.Delay(1000); //Give the logger time to show exit.
             RobotSend.Dispose();
+            Console.WriteLine("Wait while window closes..");
+
+            //This is a hack. Need to output a bunch of stuff to 
+            for(int i = 0; i < 20; i++)
+            {
+                Logger.Instance.Refresh();
+                Console.Write(" ");
+                Console.Out.Flush();
+            }
+
+            Debug.WriteLine("msg queue:"+Logger.Instance.GetLength());
+            //give time for printouts before exit
+            Thread.Sleep(1000);
+            //e.Cancel=true;
+
         }
 
         //For test

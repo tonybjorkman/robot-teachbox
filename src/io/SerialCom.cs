@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Net.NetworkInformation;
-using System.Threading; 
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace robot_teachbox
 {
@@ -12,7 +14,7 @@ namespace robot_teachbox
         private SerialPort _serialPort;
         static bool _continue=true;
 
-        private Thread ReadThread;
+        private Task ReadThread;
         private object readLock = new object();
 
         public SerialCom(){
@@ -65,21 +67,20 @@ namespace robot_teachbox
         /// <summary>
         /// Stop Thread used for continously reading and outputting serial in data
         /// </summary>
-        public void StopReadThread(){
+        public Task StopReadThread(){
             if (ReadThread != null)
             {
                 _continue = false;
-                ReadThread.Join();
                 Logger.Instance.Log("ReadThread closed");
             }
+            return ReadThread;
         }
 
         /// <summary>
         /// Start Thread used for continously reading and outputting serial in data
         /// </summary>
         public void StartReadThread(){
-            ReadThread = new Thread(this.Read);
-            ReadThread.Start();
+            ReadThread = Task.Run(this.Read);
             Logger.Instance.Log("ReadThread started");
         }
 
@@ -126,7 +127,7 @@ namespace robot_teachbox
             return reply;
         }
 
-        private void Read()
+        private async Task Read()
         {
             while (_continue)
             {
@@ -149,6 +150,7 @@ namespace robot_teachbox
 
         public void Dispose()
         {
+            this._serialPort.Close();
             this._serialPort.Dispose();
         }
     }
