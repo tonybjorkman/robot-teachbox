@@ -64,7 +64,7 @@
                 
                 <Label Content="Polar Grab Position Move" />
                 <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5">
-                    <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="160" Width="700" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
+                    <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="160" Width="700" CellEditEnding="HandleMainDataGridCellEditEnding" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -84,7 +84,7 @@
                 <Label Content="Circle Pour Position Move" />
                 <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5">
 
-                    <DataGrid x:Name="dataCirclePourGrid" Height="160" HorizontalAlignment="Left" Width="700"  RowEditEnding="dataCirclePourGrid_RowEditEnding" CellEditEnding="DataGrid_LostFocus" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
+                    <DataGrid x:Name="dataCirclePourGrid" Height="160" HorizontalAlignment="Left" Width="700" CellEditEnding="HandleMainDataGridCellEditEnding" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>

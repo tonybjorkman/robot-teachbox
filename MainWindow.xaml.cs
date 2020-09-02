@@ -23,6 +23,7 @@ using robot_teachbox.src.main;
 using System.IO;
 using System.Text.Json;
 using System.Diagnostics;
+using System.Data;
 
 namespace robot_teachbox
 {
@@ -274,6 +275,7 @@ namespace robot_teachbox
         { "btn_keyLeft", "+Roll[◄]" },
         { "btn_keyRight", "-Roll[►]" }};
 
+        public DataRowView rowBeingEdited { get; private set; }
 
         private void SetViewMovementBtnLabels(Command movType)
         {
@@ -304,16 +306,25 @@ namespace robot_teachbox
             Console.WriteLine("Keyinput disabled while editing");
         }
 
-        private void DataGrid_LostFocus(object sender, DataGridCellEditEndingEventArgs e)
+        private bool isManualEditCommit;
+        private void HandleMainDataGridCellEditEnding(
+          object sender, DataGridCellEditEndingEventArgs e)
         {
-            keyEventActive = true;
-            Console.WriteLine("Edit finished, Keyinput enabled");
-            
-            //this.dataGrid.CommitEdit();
+            if (!isManualEditCommit)
+            {
+                isManualEditCommit = true;
+                DataGrid grid = (DataGrid)sender;
+                grid.CommitEdit(DataGridEditingUnit.Row, true);
+                isManualEditCommit = false;
+                keyEventActive = true;
+                Console.WriteLine("Edit finished, Keyinput enabled, commit cell change");
+            }
         }
+
 
         private void PolarPosRow_Button_Click(object sender, RoutedEventArgs e)
         {
+      
             var rows = this.dataGrid.SelectedCells;
             var pos = rows.ElementAt(0).Item as PositionGrab;
             //we only care about a single selection, a button should map to only its own row.
@@ -326,8 +337,10 @@ namespace robot_teachbox
         }
 
 
+
         private void Circle3DPosRow_Button_Click(object sender, RoutedEventArgs e)
         {
+           
             var rows = this.dataCirclePourGrid.SelectedCells;
             var pos = rows.ElementAt(0).Item as Circle3D;
             //we only care about a single selection, a button should map to only its own row.
@@ -381,23 +394,17 @@ namespace robot_teachbox
 
         private void exitClicked(object sender, RoutedEventArgs e)
         {
+            OnWindowClosing(this,null);
             System.Windows.Application.Current.Shutdown();
         }
 
-        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-
-        }
 
         private void DataGrid_GotoButton_Click(object sender, RoutedEventArgs e)
         {
 
             Action<DataGrid> GotoSelectedGridPos = (grid) =>
             {
-                //finish the edit-event and refresh items in case the
-                //previous selection was editing a cell.
-                grid.CommitEdit();
-                grid.Items.Refresh();
+
                 var rows = grid.SelectedCells;
                 var pos = rows.ElementAt(0).Item as PolarPosition;
                 if (pos != null)
@@ -427,8 +434,7 @@ namespace robot_teachbox
             {
                 //finish the edit-event and refresh items in case the
                 //previous selection was editing a cell.
-                grid.CommitEdit();
-                grid.Items.Refresh();
+
                 var rows = grid.SelectedCells;
                 var robotPosNow = RobotSend.GetPosition();
                 var rowPos = rows.ElementAt(0).Item as PolarPosition;
@@ -457,9 +463,5 @@ namespace robot_teachbox
             }
         }
 
-        private void dataCirclePourGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            Logger.Instance.Log("row eedit eneded");
-        }
     }
 }
