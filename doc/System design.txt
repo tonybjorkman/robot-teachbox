@@ -1,0 +1,29 @@
+= Robot Commands =
+Grab at position <X> with <grabsettings>
+Pour at position <Y> with <poursettings (length of bottle), duration>
+Release at bottle-position <X> with <grabsettings>
+
+= Drink System =
+
+Make recipe X at pos Y
+ - Validate preconditions (check stock of ingredients, check that glasses are in place)
+ - Add order to orderlist
+ - Break order down into task items
+
+Worker thread:
+ - Check
+ - Do cheapest task. (lets say its already holding a bottle of whiskey and there is a task for pouring yet another whiskey).
+
+= Environment Commands =
+Is there a glass in spot X?
+Has a glass been removed?(event)
+
+= Example of task-breakdown for order =
+Recipe Whiskey Coke.
+
+Require that robot is Idle, ie. have not gripped anything and gripper open.
+Task1. Grab GetBottle("Coke") -the bottle object will tell where it wants to be gripped and how tall it is.
+Task2. Pour <user defined glass-slot>
+Task3. Release coke
+(Async task indicate drink finished)
+

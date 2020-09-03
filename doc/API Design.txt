@@ -1,0 +1,68 @@
+
+Tasks:
+0. Query available bottles {{"name":"Coke","id":"0", "amount":33},{"name":"Whiskey","id":"1","amount":25}}
+1. Order recipe <recipe-id> for <slots> : {OK|Out of stock|Illegal}
+2. Add recipe {"name":"Whiskey Coke","recipe":{"bottleId":0, "amount":12},{"bottleId":1, "amount":4}}
+3. Query orders {{"OrderId":23,"Customer":"Olle","Slot":1, ?<full recipe> or just <recipe-id> and let front-end build it? }
+				 {"OrderId":24,"Customer":"Kalle","Slot":2 ?<full recipe> or just <recipe-id> and let front-end build it? }}
+
+
+=User stories=
+-Order-
+Olle puts down his glass in a glass slot and remembers which glass-slot-id.
+Olle selects which drink-slot is his.
+Olle browses available drink-recipes, selects a recipe and presses order.
+Robot places work in scheduler and starts working.
+There is an indication that the drink is finished and waiting for pick-up.
+When the glass is removed, the system tags the position as free.
+
+1. {{"recipe-id":3, "drink-slot":2]]
+    {{"recipe-id":3, "drink-slot":2]]
+
+2. Task(Position.Grab(0))
+    Task(Position.Pour(2))
+    Task(Position.Release(0))
+    Task(Position.Grab(1))
+    Task(Position.Pour(2))
+    Task(Position.Release(1))
+
+3. Joblist
+0: Task(Position.Grab(0))
+    Task(Position.Pour(2))
+    ...
+1: Task(Position.Grab(0))
+    Task(Position.Pour(3))
+    ...
+
+Optimizations: Grab is a precondition for Pour, which means that if grab is already done 
+then no need for it. If I want to do X then depending on which state the world is in then
+I will need to do a bunch of extrinsic tasks before(pre-extrinsic) and perhaps after(post-extrinsic).
+
+Lets say I want to know the cost of Pour A into B, this requires knowledge of what is needed 
+to transition between states. Pour requires Bottle A Grip, Bottle A Grip requires Free Gripper.
+
+State				|	Action					|	Pre-requirements
+----------------------------------------------------------------
+Bottle X Gripped		Grab Bottle X				Lid open, Gripper Free.
+Gripper Free			Release Current Bottle		Lid open, Bottle X Gripped
+Pour Bottle X at Y  	Pour Y						Bottle X Gripped
+Lid Open				Open Lid					Gripper Free
+Lid Closed				Close Lid					Gripper Free
+
+Check each possible order and get cost:
+
+Grab Bottle X <- Lid Open (if not, Open Lid)
+			  <- Gripper Free
+			  
+Open Lid <- Gripper free (if not, Release Current Bottle)
+Release Current Bottle 
+
+Heuristics For JobCoordinator:
+
+Holding a bottle: 
+
+= State:Holding Bottle =
+If any other Job has that bottle as next action, if so, do them, else, return bottle.
+
+= State:Idle =
+Ask JobCoordinator for something to do.
