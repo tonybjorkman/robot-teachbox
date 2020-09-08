@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -13,9 +14,11 @@ namespace robot_teachbox.src.control
     {
         public static T Dequeue<T>(this List<T> list)
         {
-            var item = list.First();
-            if (item != null)
+
+            T item=default(T);
+            if (list != null && list.Count>0)
             {
+                item = list.First();
                 list.Remove(item);
             }
             return item;
@@ -48,6 +51,26 @@ namespace robot_teachbox.src.control
     {
         public List<JobTask> Tasks { get; set; }
 
+        public Job()
+        {
+            Tasks = new List<JobTask>();
+        }
+
+        public void AddTask(JobTask task)
+        {
+            Tasks.Add(task);
+        }
+
+        public JobTask DequeueTask()
+        {
+            return Tasks.Dequeue();
+        }
+
+        public JobTask DequeueTask(JobTask task)
+        {
+            return Tasks.DequeueItem(task);
+        }
+
     }
 
     //a single task within a job. Task is putting Amount of BottleId in GlassIndex.
@@ -61,10 +84,11 @@ namespace robot_teachbox.src.control
 
         private Job GetCurrentJob()
         {
-            if (CurrentJob != null)
+            if (CurrentJob != null && CurrentJob.Tasks.Count > 0)  
             {
                 return CurrentJob;
-            } else //start with next job
+            }   
+            else //start with next job if prev is finished
             {
                 var j = jobs.Dequeue();
                 CurrentJob = j;
@@ -72,19 +96,37 @@ namespace robot_teachbox.src.control
             }   
         }
 
+        
 
+        public void AddJob(Job job)
+        {
+            Debug.WriteLine($"Added job {job.GetHashCode()}");
+
+            jobs.Add(job);
+        }
+
+
+        //A list of jobs, 
+        /// <summary>
+        ///     Gets the currentJobs (if one exists) next Task (if one exist) and returns
+        /// The tasks from other jobs aswell if they are equal to the currentJobs.
+        /// </summary>
+        /// <returns></returns>
         public List<JobTask> GetNextTasks() {
             var taskList = new List<JobTask>();
             var currJob = GetCurrentJob();
             if(currJob != null)
             {
-                var task = currJob.Tasks.Dequeue();
-                taskList.Add(task);
-                foreach(var j in jobs)
+                var task = currJob.DequeueTask();
+                if (task != null)
                 {
-                    taskList.Add(j.Tasks.DequeueItem(task));
-                }
+                    taskList.Add(task);
+                    Debug.WriteLine($"GetNextTask was called and task {task.BottleId} added");
+                    taskList.AddRange(GetCommonTasks(task));
+
+                } 
             }
+            Debug.WriteLine(" ");
             return taskList;
         }
 
@@ -94,9 +136,22 @@ namespace robot_teachbox.src.control
         /// </summary>
         /// <param name="task">Task to search for</param>
         /// <returns></returns>
-        private JobTask GetCommonTasks(JobTask task)
+        private List<JobTask> GetCommonTasks(JobTask task)
         {
-            throw new NotImplementedException();
+            var taskList = new List<JobTask>();
+
+            foreach (var j in jobs)
+            {
+
+                var siblingTask = j.DequeueTask(task);
+                if (siblingTask != null)
+                {
+                    taskList.Add(siblingTask);
+                    Debug.WriteLine($"found siblingtask {siblingTask.BottleId}");
+
+                }
+            }
+            return taskList;
         }
 
         public void GetJobTask()
