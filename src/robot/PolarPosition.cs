@@ -71,7 +71,7 @@ namespace robot_teachbox
             return Math.Atan(y / x) * 360 / (Math.PI * 2);
         }
 
-        private double GetCalculatedAngle(double x, double y)
+        public double GetCalculatedAngle(double x, double y)
         {
             return Math.Atan(y / x) * 360 / (Math.PI * 2);
         }

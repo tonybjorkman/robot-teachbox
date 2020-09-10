@@ -107,6 +107,10 @@ namespace robot_teachbox
             }
         }
 
+        ObservableCollection<Circle3D> pourPositions;
+        ObservableCollection<PositionGrab> grabPositions;
+
+
         //#TODO: remove duplication
         private void LoadPositionFromFile()
         {
@@ -120,14 +124,14 @@ namespace robot_teachbox
             using (System.IO.StreamReader file = new System.IO.StreamReader(fullPathGrab))
             {
                 var gridJson = file.ReadToEnd();
-                var positions = JsonSerializer.Deserialize<ObservableCollection<PositionGrab>>(gridJson);
-                this.dataGrid.ItemsSource=positions;
+                grabPositions = JsonSerializer.Deserialize<ObservableCollection<PositionGrab>>(gridJson);
+                this.dataGrid.ItemsSource=grabPositions;
             }
             using (System.IO.StreamReader file = new System.IO.StreamReader(fullPathCircle))
             {
                 var gridJson = file.ReadToEnd();
-                var positions = JsonSerializer.Deserialize<ObservableCollection<Circle3D>>(gridJson);
-                this.dataCirclePourGrid.ItemsSource = positions;
+                pourPositions = JsonSerializer.Deserialize<ObservableCollection<Circle3D>>(gridJson);
+                this.dataCirclePourGrid.ItemsSource = pourPositions;
             }
         }
 
@@ -402,15 +406,23 @@ namespace robot_teachbox
         private void DataGrid_GotoButton_Click(object sender, RoutedEventArgs e)
         {
 
-            Action<DataGrid> GotoSelectedGridPos = (grid) =>
+            Action<DataGrid,string> GotoSelectedGridPos = (grid,type) =>
             {
 
                 var rows = grid.SelectedCells;
                 var pos = rows.ElementAt(0).Item as PolarPosition;
                 if (pos != null)
                 {
+                    CmdMsg msg;
                     Logger.Instance.Log(pos.ToMelfaPosString());
-                    var msg = new CmdMsg(Command.MovePosition, pos);
+                    if (type == "grab")
+                    {
+                        msg = new CmdMsg(Command.MovePosition, pos);
+                    } else
+                    {
+                        var pourPos = pos as Circle3D;
+                        msg = new CmdMsg(Command.MovePosition, pourPos.GetPositionAtStartAngle());
+                    }
                     RobotSend.Send(msg);
                 }
             };
@@ -420,10 +432,10 @@ namespace robot_teachbox
             if (btn == null){ return; }
             else if (btn.Name == "GotoGrab")
             {
-                GotoSelectedGridPos(this.dataGrid);
+                GotoSelectedGridPos(this.dataGrid,"grab");
             } else if (btn.Name == "GotoCircle")
             {
-                GotoSelectedGridPos(this.dataCirclePourGrid);
+                GotoSelectedGridPos(this.dataCirclePourGrid,"pour");
             }
 
         }
@@ -434,20 +446,28 @@ namespace robot_teachbox
             {
                 //finish the edit-event and refresh items in case the
                 //previous selection was editing a cell.
-
+                grid.CommitEdit();
                 var rows = grid.SelectedCells;
                 var robotPosNow = RobotSend.GetPosition();
                 var rowPos = rows.ElementAt(0).Item as PolarPosition;
                 if (rowPos == null)  //
                 {
-                    Type t = dataGrid.ItemsSource.GetType().GetGenericArguments().Single();
+                    Type t = grid.ItemsSource.GetType().GetGenericArguments().Single();
                     var position = Activator.CreateInstance(t) as PolarPosition;
                     position.UpdatePosition(robotPosNow);
-                    grid.Items.Add(position);
+                    //grid.Items.Add(position);
+                    if (t == typeof(PositionGrab))
+                    {
+                        grabPositions.Add((PositionGrab)position);
+                    }
+                    else if (t == typeof(Circle3D))
+                        pourPositions.Add((Circle3D)position);
                 } else
                 {
                     rowPos.UpdatePosition(robotPosNow);
                 }
+                grid.Items.Refresh();
+
             };
 
             var btn = sender as Button;
