@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Text.RegularExpressions;
 
 namespace robot_teachbox
@@ -22,13 +23,16 @@ namespace robot_teachbox
 
         public PolarPosition(string where)
         {
+            where = where.Replace(" ", "");
             var elements = where.Split(",");
+            
             x = Double.Parse(elements[0]);
             y = Double.Parse(elements[1]);
             z =  Double.Parse(elements[2]);
             _angle = GetCalculatedAngle();
             TrueRoll = Double.Parse(elements[3])+_angle;
             Pitch = Double.Parse(elements[4]);
+            _distance = GetCalculatedDistance();
             
         }
 
@@ -38,6 +42,12 @@ namespace robot_teachbox
         /// </summary>
 
         public string Name { get; set; }
+
+        internal void OffsetHeight(double gripHeight)
+        {
+            z = z + gripHeight;
+        }
+
         public double Distance 
         {
             get 
@@ -88,6 +98,12 @@ namespace robot_teachbox
                 UpdateInternalXY();
             }
         }
+
+        public void OffsetAngle(double angle)
+        {
+            Angle = Angle + angle;
+        }
+
         //roll-joint relative the robots own position. Normally it relates to global position which is bad for pouring use case.
         public double TrueRoll { get; set; }
         public double Pitch { get; set; }

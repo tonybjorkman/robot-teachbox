@@ -1,4 +1,5 @@
-﻿using System;
+﻿using robot_teachbox.src.inventory;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace robot_teachbox.src.control
         public static JobTask DequeueItem(this List<JobTask> list, JobTask searchItem)
         {
             
-            var item = list.Find(x => x.BottleId == searchItem.BottleId);
+            var item = list.Find(x => x.BottleTypeId == searchItem.BottleTypeId);
             if (item != null)
             {
                 list.Remove(item);
@@ -40,9 +41,14 @@ namespace robot_teachbox.src.control
 
     public class JobTask
     {
-        public int BottleId { get; set; }
+        public int BottleTypeId { get; set; }
         public int GlassIndex;
         public int Amount;
+
+        public String ToString()
+        {
+            return $"Pour {Amount}cl ingredient#{BottleTypeId} into slot {GlassIndex}";
+        }
 
     }
 
@@ -54,6 +60,11 @@ namespace robot_teachbox.src.control
         public Job()
         {
             Tasks = new List<JobTask>();
+        }
+
+        public Job(List<JobTask> recipeTasks)
+        {
+            Tasks = recipeTasks;
         }
 
         public void AddTask(JobTask task)
@@ -69,6 +80,17 @@ namespace robot_teachbox.src.control
         public JobTask DequeueTask(JobTask task)
         {
             return Tasks.DequeueItem(task);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder mystr = new StringBuilder();
+            foreach(var s in Tasks)
+            {
+                mystr.AppendLine($"{s.Amount}cl bottle:{s.BottleTypeId} to slot {s.GlassIndex}");
+            }
+
+            return mystr.ToString();
         }
 
     }
@@ -112,7 +134,7 @@ namespace robot_teachbox.src.control
         /// The tasks from other jobs aswell if they are equal to the currentJobs.
         /// </summary>
         /// <returns></returns>
-        public List<JobTask> GetNextTasks() {
+        public IEnumerable<JobTask> GetNextTasks() {
             var taskList = new List<JobTask>();
             var currJob = GetCurrentJob();
             if(currJob != null)
@@ -121,13 +143,18 @@ namespace robot_teachbox.src.control
                 if (task != null)
                 {
                     taskList.Add(task);
-                    Debug.WriteLine($"GetNextTask was called and task {task.BottleId} added");
+                    Debug.WriteLine($"GetNextTask was called and task {task.BottleTypeId} added");
                     taskList.AddRange(GetCommonTasks(task));
 
                 } 
             }
             Debug.WriteLine(" ");
             return taskList;
+        }
+
+        public bool HasJobs()
+        {
+            return jobs.Count > 0;
         }
 
         /// <summary>
@@ -147,17 +174,13 @@ namespace robot_teachbox.src.control
                 if (siblingTask != null)
                 {
                     taskList.Add(siblingTask);
-                    Debug.WriteLine($"found siblingtask {siblingTask.BottleId}");
+                    Debug.WriteLine($"found siblingtask {siblingTask.BottleTypeId}");
 
                 }
             }
             return taskList;
         }
 
-        public void GetJobTask()
-        {
-
-        }
 
     }
 }
