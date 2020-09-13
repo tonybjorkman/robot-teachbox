@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:robot_teachbox"
         xmlns:src="clr-namespace:robot_teachbox.src.main"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="900" MinHeight="800" MinWidth="800"
+        Title="MainWindow" Height="800" Width="1300" MinHeight="800" MinWidth="1300"
         KeyDown="Window_KeyDown" FontFamily="Lucida Console" >
 
 
@@ -55,7 +55,7 @@
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"  DockPanel.Dock="Bottom"/>
 
 
-        <Grid DockPanel.Dock="Right" HorizontalAlignment="Left" >
+        <Grid DockPanel.Dock="Right" HorizontalAlignment="Left" Width="1100" >
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"  DockPanel.Dock="Bottom"/>
 
             <StackPanel HorizontalAlignment="Left">
@@ -64,7 +64,7 @@
                 
                 <Label Content="Polar Grab Position Move" />
                 <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5">
-                    <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="160" Width="700" CellEditEnding="HandleMainDataGridCellEditEnding" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
+                    <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="160" Width="1050" CellEditEnding="HandleMainDataGridCellEditEnding" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -84,7 +84,7 @@
                 <Label Content="Circle Pour Position Move" />
                 <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5">
 
-                    <DataGrid x:Name="dataCirclePourGrid" Height="160" HorizontalAlignment="Left" Width="700" CellEditEnding="HandleMainDataGridCellEditEnding" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
+                    <DataGrid x:Name="dataCirclePourGrid" Height="160" HorizontalAlignment="Left" Width="1050" CellEditEnding="HandleMainDataGridCellEditEnding" BeginningEdit="DataGrid_BeginningEdit" CanUserAddRows="True" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Cmd">
                                 <DataGridTemplateColumn.CellTemplate>

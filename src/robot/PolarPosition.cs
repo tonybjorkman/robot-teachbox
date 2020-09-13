@@ -32,7 +32,7 @@ namespace robot_teachbox
             _angle = GetCalculatedAngle();
             TrueRoll = Double.Parse(elements[3])+_angle;
             Pitch = Double.Parse(elements[4]);
-            _distance = GetCalculatedDistance();
+            Distance = GetCalculatedDistance();
             
         }
 
@@ -57,7 +57,6 @@ namespace robot_teachbox
             set 
             {
                 _distance = value;
-                UpdateInternalXY();
             }
         }
 
@@ -108,9 +107,9 @@ namespace robot_teachbox
         public double TrueRoll { get; set; }
         public double Pitch { get; set; }
 
-        public double x;
-        public double y;
-        public double z;
+        public double x { get; set; }
+        public double y { get; set; }
+        public double z { get; set; }
 
 
         public void SetPolarPos(double _distance, double _angle){
@@ -155,7 +154,7 @@ namespace robot_teachbox
                 return output;
         }
 
-        internal void UpdatePosition(PolarPosition rowPos)
+        public virtual void UpdatePosition(PolarPosition rowPos)
         {
             x = rowPos.x;
             y = rowPos.y;
@@ -163,6 +162,7 @@ namespace robot_teachbox
             _angle = GetCalculatedAngle();
             Pitch = rowPos.Pitch;
             TrueRoll = rowPos.TrueRoll;
+            Distance = GetCalculatedDistance();
         }
     }
 }

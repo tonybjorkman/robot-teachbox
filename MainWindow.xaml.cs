@@ -133,6 +133,8 @@ namespace robot_teachbox
                 pourPositions = JsonSerializer.Deserialize<ObservableCollection<Circle3D>>(gridJson);
                 this.dataCirclePourGrid.ItemsSource = pourPositions;
             }
+
+                    
         }
 
         private void InitializeRobotObjects()
@@ -350,8 +352,12 @@ namespace robot_teachbox
             //we only care about a single selection, a button should map to only its own row.
             if (pos != null)
             {
-                RobotSend.Send(new CmdMsg(Command.QueryPour, (PolarPosition)pos));
+                //Send the clone, we want to set the original in the datagrid to be reversed. If pointing
+                //to the same reference as the command we cant do that without reversing the command.
+                RobotSend.Send(new CmdMsg(Command.QueryPour, (PolarPosition)pos.Clone()));
                 Console.WriteLine("Pour:"+pos.ToMelfaPosString());
+                pos.Reverse = !pos.Reverse;
+                dataCirclePourGrid.Items.Refresh();
             }
         }
 
@@ -450,9 +456,10 @@ namespace robot_teachbox
                 var rows = grid.SelectedCells;
                 var robotPosNow = RobotSend.GetPosition();
                 var rowPos = rows.ElementAt(0).Item as PolarPosition;
+                Type t = grid.ItemsSource.GetType().GetGenericArguments().Single();
+
                 if (rowPos == null)  //
                 {
-                    Type t = grid.ItemsSource.GetType().GetGenericArguments().Single();
                     var position = Activator.CreateInstance(t) as PolarPosition;
                     position.UpdatePosition(robotPosNow);
                     //grid.Items.Add(position);
@@ -461,10 +468,23 @@ namespace robot_teachbox
                         grabPositions.Add((PositionGrab)position);
                     }
                     else if (t == typeof(Circle3D))
-                        pourPositions.Add((Circle3D)position);
+                    {
+                        var cposition = position as Circle3D;
+                        //Make the tip of the bottle the rotation center
+                        //so we can use "goto" and be at the position we are now.
+                        cposition.OffsetRotationCenterToTip();
+                        pourPositions.Add(cposition);
+                    }
                 } else
                 {
                     rowPos.UpdatePosition(robotPosNow);
+                    if (t == typeof(Circle3D))
+                    {
+                        var pos = rowPos as Circle3D;
+                        pos.OffsetRotationCenterToTip();
+
+                    }
+
                 }
                 grid.Items.Refresh();
 
