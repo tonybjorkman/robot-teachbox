@@ -24,6 +24,8 @@ using System.IO;
 using System.Text.Json;
 using System.Diagnostics;
 using System.Data;
+using robot_teachbox.src.inventory;
+using robot_teachbox.src.control;
 
 namespace robot_teachbox
 {
@@ -388,9 +390,48 @@ namespace robot_teachbox
         //For test
         private void testButton1_Click(object sender, RoutedEventArgs e)
         {
-            Type  t = dataGrid.ItemsSource.GetType().GetGenericArguments().Single();
+            /*Type  t = dataGrid.ItemsSource.GetType().GetGenericArguments().Single();
             var inst = Activator.CreateInstance(t);
-            Console.WriteLine(inst.ToString());
+            Console.WriteLine(inst.ToString());*/
+
+            //So decimal in 20.00 will parse correctly
+            
+            var _inventory = new Inventory();
+            _inventory.AddBottle("Whiskey", 0, 50, 0, 60);
+            _inventory.AddBottle("Cola", 1, 50, 1, 60);
+            _inventory.AddBottle("Juice", 2, 50, 2, 60);
+            _inventory.AddBottle("Rum", 3, 50, 3, 60);
+
+            Debug.WriteLine(_inventory.ToString());
+
+            var jf = new JobFactory(_inventory);
+            var ingredientsWC = new Dictionary<string, int>
+            {
+                {"Whiskey",6 }, {"Cola",12}
+            };
+            var ingredientsRC = new Dictionary<string, int>
+            {
+                {"Rum",4 }, {"Cola",6}
+            };
+            var ingredientsJW = new Dictionary<string, int>
+            {
+                {"Juice",10 }, {"Whiskey",10}
+            };
+            var jobW = jf.CreateDrinkByIngredients(1, ingredientsWC);
+            var jobR = jf.CreateDrinkByIngredients(2, ingredientsRC);
+            var jobJW = jf.CreateDrinkByIngredients(0, ingredientsJW);
+
+
+            var jc = new JobCoordinator();
+            jc.AddJob(jobW);
+            jc.AddJob(jobR);
+            jc.AddJob(jobJW);
+
+
+            var controller = new DrinkRobotController(jc, _inventory, new WorldPositions(),RobotSend);
+            controller.RunJobs();
+
+
         }
 
         //for test

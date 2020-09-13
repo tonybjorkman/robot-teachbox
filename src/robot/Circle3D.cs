@@ -26,6 +26,11 @@ namespace robot_teachbox
             StopAngle = 120;
         }
 
+        public Circle3D(string where):base(where)
+        {
+            Radius = 100;
+        }
+
         public override void UpdatePosition(PolarPosition rowPos)
         {
             base.UpdatePosition(rowPos);
